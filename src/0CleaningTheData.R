@@ -72,8 +72,24 @@ list.wf[[3]] <- list.lf[[3]] %>% pivot_wider(names_from = Lab.Code, values_from 
 names(list.wf) <- names(mylist)
 # export dataframes in .csv
 for(i in 1:length(list.wf) ){
-  write.csv(list.wf[[i]],file = paste("/home/max/Documents/MStatistics/Thesis/Repository/Data/",names(list.wf[i]),'.csv',sep=""))
+  write.csv(list.wf[[i]],file = paste("/home/max/Documents/MStatistics/Thesis/Repository/data/raw/",names(list.wf[i]),'.csv',sep=""))
 }
 
 
-########################################
+#### Create a dataframe containing key infos on the sample analyzed ####
+dput(summary$Name.of.the.rock)
+ID <- c("GeoPT48", "GeoPT46", "GeoPT43", "GeoPT41", "GeoPT39", "GeoPT39A", 
+          "GeoPT38", "GeoPT38A", "GeoPT37", "GeoPT36", "GeoPT35", "GeoPT34", 
+          "GeoPT32")
+name <- c("Monzonite", "Granodiorite", "Dolerite", "Andesite", "Syenite", 
+          "Nepheline Syenite", "Ardnamurchan gabbro", "Modified harzburgite", 
+          "Rhyolite", "Gabbro", "Tonalite", "Granite", "Woodstock basalt")
+year <- c(2021L, 2020L, 2018L, 2017L, 2016L, 2016L, 2016L, 2016L, 2015L, 
+          2015L, 2014L, 2014L, 2013L)
+samplename <- c("MzBP-1", "HG-1", "ADS-1", "ORA-1", "SyMP-1", "MNS-1", "OU-7", 
+                "HARZ01", "ORPT-1", "GSM-1", "TLM-1", "GRI-1", "WG-1")
+description <- tibble(ID,name,year,samplename)
+
+# export to .csv 
+
+write.csv(description,"/home/max/Documents/MStatistics/Thesis/Repository/data/raw/description.csv")
