@@ -1,1 +1,17 @@
 \chapter{Methods}
+\subsection{Fetching the data}
+The raw material of this thesis is coming from the \textit{International Association of Analysts}. Thirteen magmatic rocks were analyzed by approximately a hundred laboratories. 
+
+We began by converting the datasets in a clean $n\times p$ matrix :
+\begin{align} \label{matrix}
+X_{n,p} = 
+\begin{pmatrix}
+x_{1,1} & x_{1,2} & \cdots & x_{1,p} \\
+x_{2,1} & x_{2,2} & \cdots & x_{2,p} \\
+\vdots  & \vdots  & \ddots & \vdots  \\
+x_{n,1} & x_{m,2} & \cdots & x_{n,p} 
+\end{pmatrix}
+\end{align}
+With $n$ the number of laboratories which analyzed the rock sample, for January 2020, $n$ was 119. $p$ is the number of chemical elements found in the sample. Theoretically, $p$ can be as large as 94, the number of naturally-occurring chemical elements. In practice, the size of the database is approximately 60 (rocks) x 30 (elements) x 100 (labs). 
+\subsection{Filling missing-values}
+We start by using the expectation-maximization algorithm. 
