@@ -93,3 +93,6 @@ description <- tibble(ID,name,year,samplename)
 # export to .csv 
 
 write.csv(description,"/home/max/Documents/MStatistics/Thesis/Repository/data/raw/description.csv")
+
+
+

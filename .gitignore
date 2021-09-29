@@ -38,6 +38,7 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 # User-specific files
+/src/miscellaneous.R
 .Ruserdata
 GeoPT Raw data early Table 1.xlsx
 GeoPT Raw data late Table 1.xlsx
@@ -45,3 +46,4 @@ git_token
 .~lock.GeoPT Raw data late Table 1.xlsx#
 .csv
 gitto
+0CleaningTheDataBis.R
