@@ -72,9 +72,13 @@
 \setcounter{page}{0}
 \pagenumbering{arabic}
 
-\input{Chapters/Introduction.tex} \cleardoublepage
+\input{Chapters/Introduction.tex}\cleardoublepage
+\input{Chapters/MotivExample.tex}\cleardoublepage
+\input{Chapters/FundaCompo.tex}\cleardoublepage
+\input{Chapters/Estimation.tex} \cleardoublepage
 \input{Chapters/Methods.tex} \cleardoublepage
 \input{Chapters/Results.tex} \cleardoublepage
+\input{Chapters/Discussion.tex} \cleardoublepage
 \input{Chapters/Conclusions.tex} \cleardoublepage
 % BACK MATTER (is dit zelfs een woord?)
 

@@ -1,0 +1,20 @@
+An initial goal of this work is to provide robust estimates of the composition of each rock. This problem is made difficult by the presence of both missing values (laboratories did not measure any composition) and outliers (the measures reported are extreme).
+
+Setting aside the problem of missing values for now, one may look at a subcomposition $\mathbf{x} \in \mathbb{S}^D$ of oxides of major elements.
+
+One begin by importing a dataset, for example GeoPT48, a monzonite.
+<<echo=TRUE, cache=TRUE>>=
+setwd("/")
+library(tidyverse)
+library(readr)
+library(ggtern)
+library(patchwork)
+library(compositions)
+library(ggfortify)
+library(ggrepel)
+@
+
+<<echo=TRUE, cache=TRUE>>=
+data <- read_csv("/data/raw/GeoPT48 -84Ra.csv")
+@
+
