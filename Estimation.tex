@@ -1,0 +1,199 @@
+
+\documentclass[a4paper,oneside,12pt,titlepage]{article}\usepackage[]{graphicx}\usepackage[]{color}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage{booktabs}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[version=4]{mhchem}
+\usepackage[scientific-notation=true]{siunitx}
+\usepackage{gensymb}
+\usepackage[top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{float}
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+
+An initial goal of this work is to provide robust estimates of the composixtion of each rock. This problem is made difficult by the presence of both missing values (laboratories did not measure any composition) and outliers (the measures reported are extreme).
+
+Setting aside the problem of missing values for now, one may look at a subcomposition $\mathbf{x} \in \mathbb{S}^D$ of oxides of major elements.
+
+One begin by importing a dataset, for example GeoPT48, a monzonite.
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# -- Attaching packages --------------------------------------- tidyverse 1.3.1 --}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# v ggplot2 3.3.5 \ \ \ \ v purrr \ \ 0.3.4\\\#\# v tibble \ 3.1.5 \ \ \ \ v dplyr \ \ 1.0.7\\\#\# v tidyr \ \ 1.1.4 \ \ \ \ v stringr 1.4.0\\\#\# v readr \ \ 1.4.0 \ \ \ \ v forcats 0.5.1}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# -- Conflicts ------------------------------------------ tidyverse\_conflicts() --\\\#\# x dplyr::filter() masks stats::filter()\\\#\# x dplyr::lag() \ \ \ masks stats::lag()}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Registered S3 methods overwritten by 'ggtern':\\\#\# \ \ method \ \ \ \ \ \ \ \ \ \ from \ \ \\\#\# \ \ grid.draw.ggplot ggplot2\\\#\# \ \ plot.ggplot \ \ \ \ \ ggplot2\\\#\# \ \ print.ggplot \ \ \ \ ggplot2}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# --\\\#\# Remember to cite, run citation(package = 'ggtern') for further info.\\\#\# --}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# Attaching package: 'ggtern'}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# The following objects are masked from 'package:ggplot2':\\\#\# \\\#\# \ \ \ \ aes, annotate, ggplot, ggplot\_build, ggplot\_gtable, ggplotGrob,\\\#\# \ \ \ \ ggsave, layer\_data, theme\_bw, theme\_classic, theme\_dark,\\\#\# \ \ \ \ theme\_gray, theme\_light, theme\_linedraw, theme\_minimal, theme\_void}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Welcome to compositions, a package for compositional data analysis.\\\#\# Find an intro with "{}? compositions"{}}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# Attaching package: 'compositions'}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# The following objects are masked from 'package:stats':\\\#\# \\\#\# \ \ \ \ anova, cor, cov, dist, var}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# The following objects are masked from 'package:base':\\\#\# \\\#\# \ \ \ \ \%*\%, norm, scale, scale.default}}\end{kframe}
+\end{knitrout}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{setwd}\hlstd{(}\hlstr{"/home/max/Documents/MStatistics/MA2/Thesis/Repository/"}\hlstd{)}
+\hlstd{data} \hlkwb{<-} \hlkwd{read_csv}\hlstd{(}\hlstr{"data/raw/GeoPT48 -84Ra.csv"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# -- Column specification --------------------------------------------------------\\\#\# cols(\\\#\# \ \ .default = col\_double(),\\\#\# \ \ Laboratory = col\_character(),\\\#\# \ \ Au = col\_logical(),\\\#\# \ \ N = col\_logical(),\\\#\# \ \ Os = col\_logical()\\\#\# )\\\#\# i Use `spec()` for the full column specifications.}}\end{kframe}
+\end{knitrout}
+Then, one looks at the subcomposition of major elements :
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{sel} \hlkwb{<-}\hlkwd{c}\hlstd{(}\hlstr{"SiO2"}\hlstd{,}\hlstr{"TiO2"}\hlstd{,}\hlstr{"Al2O3"}\hlstd{,}\hlstr{"Fe2O3T"}\hlstd{,}\hlstr{"MnO"}\hlstd{,}\hlstr{"MgO"}\hlstd{,}\hlstr{"CaO"}\hlstd{,}\hlstr{"Na2O"}\hlstd{,}
+        \hlstr{"K2O"}\hlstd{,}\hlstr{"P2O5"}\hlstd{)}
+\hlstd{df.majors} \hlkwb{<-} \hlkwd{select}\hlstd{(data,}\hlkwd{all_of}\hlstd{(sel))}
+\hlcom{# closure operation}
+\hlstd{df.majors} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwd{clo}\hlstd{(df.majors))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+Then  missing values are imputed by the column geometric mean
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{geomean.v} \hlkwb{<-} \hlkwd{sapply}\hlstd{(}\hlkwd{rbind}\hlstd{(df.majors),geomean)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{ncol}\hlstd{(df.majors))\{}
+  \hlstd{df.majors[,i][}\hlkwd{is.na}\hlstd{(df.majors[,i])]} \hlkwb{<-} \hlstd{geomean.v[i]}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\noindent One then transform the dataset using the CLR transformation which is a mapping  $\mathbb{S}^D -> \mathbb{U}^D$ :
+\begin{align}
+\mathbf{z} = clr(\mathbf{x} = [log(x_1/g(x)),..,log(x_D/g(x))]
+\end{align}
+Where $\mathbb{U}^D$ is a subspace of $\mathbb{R}^D$ defined as : 
+\begin{align*}
+U^D = \Big\{[u_1,..,u_D] : \sum_{i=1}^D = 0  \Big\}
+\end{align*}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{cr.df} \hlkwb{<-} \hlkwd{data.frame}\hlstd{()}
+\hlstd{clr.df} \hlkwb{<-} \hlkwd{data.frame}\hlstd{()}
+\hlcom{# cr.df, divide each entries in a column by the geometric mean of this column}
+\hlstd{cr.df} \hlkwb{<-} \hlkwd{sweep}\hlstd{(df.majors,}\hlkwc{MARGIN} \hlstd{=} \hlnum{2}\hlstd{,}\hlkwc{FUN}\hlstd{=}\hlstr{"/"}\hlstd{,}\hlkwc{STATS} \hlstd{= geomean.v)}
+\hlcom{# clr.df is the natural logarithm of cr.df. Now this dataframe contains clr components}
+\hlstd{clr.df} \hlkwb{<-} \hlkwd{log}\hlstd{(cr.df)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+Then principal component analysis is conducted.
+Z denotes the mean-centered data matrix X :  
+\begin{align*}
+z_{ij} = x_{ij} - \mu_j
+\end{align*}
+Where $\mu_j$ denotes the arithmetic mean of the j-th column. Recall that here using the arithmetic mean is justified because X now lives in a subspace of $\mathbb{R}^D$ which is no longer constrained by the unit sum.
+
+Perform Singular Value Decomposition on clr.df : 
+\begin{align}
+Z = UDW^T  = (UD)W^T = Z^{*}W^T
+\end{align}
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{pca.clr} \hlkwb{<-} \hlkwd{prcomp}\hlstd{(clr.df,}\hlkwc{scale} \hlstd{= T,}\hlkwc{rank.} \hlstd{=} \hlkwd{ncol}\hlstd{(clr.df)}\hlopt{-}\hlnum{1} \hlstd{)}
+\hlkwd{summary}\hlstd{(pca.clr)}
+\end{alltt}
+\begin{verbatim}
+## Importance of first k=9 (out of 10) components:
+##                           PC1    PC2    PC3     PC4     PC5     PC6     PC7
+## Standard deviation     2.5272 1.1288 1.0464 0.72257 0.59620 0.48113 0.23209
+## Proportion of Variance 0.6387 0.1274 0.1095 0.05221 0.03555 0.02315 0.00539
+## Cumulative Proportion  0.6387 0.7661 0.8756 0.92779 0.96334 0.98649 0.99187
+##                            PC8     PC9
+## Standard deviation     0.18604 0.17566
+## Proportion of Variance 0.00346 0.00309
+## Cumulative Proportion  0.99533 0.99842
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+
+
+
+
+\end{document}

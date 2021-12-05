@@ -1,0 +1,98 @@
+
+\documentclass[a4paper,oneside,12pt,titlepage]{article}
+
+\usepackage{booktabs}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[version=4]{mhchem}
+\usepackage[scientific-notation=true]{siunitx}
+\usepackage{gensymb}
+\usepackage[top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{float}
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\title{PCA, estimation \& outlier detection}
+\begin{document}
+\maketitle
+
+
+An initial goal of this work is to provide robust estimates of the composixtion of each rock. This problem is made difficult by the presence of both missing values (laboratories did not measure any composition) and outliers (the measures reported are extreme).
+
+Setting aside the problem of missing values for now, one may look at a subcomposition $\mathbf{x} \in \mathbb{S}^D$ of oxides of major elements.
+
+One begin by importing a dataset, for example GeoPT48, a monzonite.
+<<echo=TRUE, cache=FALSE,include=FALSE,results='hide'>>=
+library(tidyverse)
+library(readr)
+library(ggtern)
+library(patchwork)
+library(compositions)
+library(ggfortify)
+library(ggrepel)
+
+geomean <- function(x){
+  # compute the geometric mean of a vector
+  exp(mean(log(x),na.rm=TRUE)) 
+}
+@
+
+<<echo=TRUE, cache=FALSE>>=
+setwd("/home/max/Documents/MStatistics/MA2/Thesis/Repository/")
+data <- read_csv("data/raw/GeoPT48 -84Ra.csv")
+@
+Then, one looks at the subcomposition of major elements :
+<<>>=
+sel <-c("SiO2","TiO2","Al2O3","Fe2O3T","MnO","MgO","CaO","Na2O",
+        "K2O","P2O5")
+df.majors <- select(data,all_of(sel))
+# closure operation
+df.majors <- data.frame(clo(df.majors))
+@
+Then  missing values are imputed by the column geometric mean
+<<>>=
+geomean.v <- sapply(rbind(df.majors),geomean)
+for (i in 1:ncol(df.majors)){
+  df.majors[,i][is.na(df.majors[,i])] <- geomean.v[i] 
+}
+@
+
+\noindent One then transform the dataset using the CLR transformation which is a mapping  $\mathbb{S}^D -> \mathbb{U}^D$ :
+\begin{align}
+\mathbf{z} = clr(\mathbf{x} = [log(x_1/g(x)),..,log(x_D/g(x))]
+\end{align}
+Where $\mathbb{U}^D$ is a subspace of $\mathbb{R}^D$ defined as : 
+\begin{align*}
+U^D = \Big\{[u_1,..,u_D] : \sum_{i=1}^D = 0  \Big\}
+\end{align*}
+
+<<echo=TRUE, cache=FALSE>>=
+cr.df <- data.frame()
+clr.df <- data.frame()
+# cr.df, divide each entries in a column by the geometric mean of this column
+cr.df <- sweep(df.majors,MARGIN = 2,FUN="/",STATS = geomean.v)
+# clr.df is the natural logarithm of cr.df. Now this dataframe contains clr components
+clr.df <- log(cr.df)
+@
+Then principal component analysis is conducted.
+Z denotes the mean-centered data matrix X :  
+\begin{align*}
+z_{ij} = x_{ij} - \mu_j
+\end{align*}
+Where $\mu_j$ denotes the arithmetic mean of the j-th column. Recall that here using the arithmetic mean is justified because X now lives in a subspace of $\mathbb{R}^D$ which is no longer constrained by the unit sum.
+
+
+# Perform Singular Value Decomposition on clr.df : 
+
+
+<<echo=TRUE, cache=FALSE>>=
+pca.clr <- prcomp(clr.df,scale = T,rank. = ncol(clr.df)-1 )
+summary(pca.clr)
+@
+
+
+
+
+
+
+\end{document}
