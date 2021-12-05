@@ -12,9 +12,9 @@
 \usepackage[top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry}
 \usepackage{float}
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
-
+\title{Preliminary Outlier Detection in Missing Values Free data}
 \begin{document}
-
+\maketitle
 
 
 An initial goal of this work is to provide robust estimates of the composixtion of each rock. This problem is made difficult by the presence of both missing values (laboratories did not measure any composition) and outliers (the measures reported are extreme).
@@ -30,8 +30,11 @@ library(readr)
 library(ggtern)
 library(patchwork)
 library(compositions)
+library(robCompositions)
 library(ggfortify)
 library(ggrepel)
+library(robustbase)
+library(rrcov)
 
 geomean <- function(x){
   # compute the geometric mean of a vector
@@ -72,9 +75,11 @@ U^D = \Big\{[u_1,..,u_D] : \sum_{i=1}^D = 0  \Big\}
 <<echo=TRUE, cache=FALSE>>=
 cr.df <- data.frame()
 clr.df <- data.frame()
-# cr.df, divide each entries in a column by the geometric mean of this column
+# cr.df, divide each entries in a column by 
+# the geometric mean of this column
 cr.df <- sweep(df.majors,MARGIN = 2,FUN="/",STATS = geomean.v)
-# clr.df is the natural logarithm of cr.df. Now this dataframe contains clr components
+# clr.df is the natural logarithm of cr.df. 
+# Now this dataframe contains clr components
 clr.df <- log(cr.df)
 @
 Then principal component analysis is conducted.
@@ -86,8 +91,9 @@ Where $\mu_j$ denotes the arithmetic mean of the j-th column. Recall that here u
 
 Perform Singular Value Decomposition on clr.df : 
 \begin{align}
-Z = UDW^T  = (UD)W^T = Z^{*}W^T
+Z = UDW^T  = (UD)W^T = Z^{*}W^T,Z \in \mathbb{R}^{n\times(d-1)} U \in \mathbb{R}^{n\times p}, D \in \mathbb{R}^{p\times p}, W \in \mathbb{R}^{(d-1)\times p}
 \end{align}
+$Z^*$ denotes the projection of the mean-centered data matrix on a space of dimension $p$. Hopefully, $Z^*$ contains enough meaningful information about $Z$ while having a much lower number of dimensions. To evaluate how good $Z^*$ approximates $Z$, one looks at the proportion of variance explained by each of the components and more specifically, the cumulative proportion of variance explained by each of the components when these components are ranked from most to less important.
 
 
 
@@ -95,8 +101,80 @@ Z = UDW^T  = (UD)W^T = Z^{*}W^T
 pca.clr <- prcomp(clr.df,scale = T,rank. = ncol(clr.df)-1 )
 summary(pca.clr)
 @
+The importance of a component, in terms of proportion of variance explained, is directly related to the D matrix whose eigenvalues squared are directly related to the proportion of variance explained through the relationship : 
+\begin{align} \label{variancepca}
+\lambda_i = d_i^2/(n-1)
+\end{align}
+Where $d_i$ denotes the i-th diagonal element in the square matrix D of the singular values and n is the number of principal components which is equal to the dimensionality of the original data matrix X.
 
+Now, one looks at the rank-two approximation of Z (as the biplot does) :
+<<>>=
+# autoplot
+autoplot(pca.clr,loadings=T,loadings.label=T)+theme_bw()
+# manually extracting the rank 2 approximation of Z
+Z.approx <- data.frame(pca.clr$x[,c(1,2)])
+colnames(Z.approx) = c("PC1","PC2")
+ggplot(aes(x=PC1,y=PC2),data=Z.approx)+theme_bw()+geom_point()
+@
+Flagging the outliers, remarkable discrepancy between robust method (MCD estimator of the location, MCD is affine equivariant and has a high breakdown value) vs classical method (sample covariance matrix). 
+<<>>=
+Z2.mcd <- covMcd(Z.approx,)
+tolEllipsePlot(Z.approx,classic = T)
+plot(Z2.mcd,which = c("distance"),classic = TRUE)
+Z2.outfree <- Z.approx[Z2.mcd$best,]
+ggplot(aes(x=PC1,y=PC2),data=Z2.outfree)+theme_bw()+geom_point()+stat_ellipse()
+@
+This approach has a pitfall. The estimation of the PC is itself not robust. Robcompositions package provides a robust PCA estimation method :
+\begin{quote}
+The compositional data set is expressed in isometric logratio coordinates. Afterwards, robust principal component analysis is performed. Resulting loadings and scores are back-transformed to the clr space where the compositional biplot can be shown. CITE ROBCOMP R package
+\end{quote}
+<<>>=
+rob.pca.clr <- pcaCoDa(df.majors)
+summary(rob.pca.clr)
 
+@
+One sees that the first two PC's found by using the robust method explains (89 \%) whereas in the classical method, the first two PC's explained only 76 \%. The outlier detection is repeated in the first 2 robust PC's subspace.
+<<>>=
+Z.approx.rob <- data.frame(rob.pca.clr$scores[,c(1,2)])
+colnames(Z.approx.rob) = c("PC1","PC2")
+ggplot(aes(x=PC1,y=PC2),data=Z.approx.rob)+theme_bw()+geom_point()
+@
+At first glance, there seem to be less outliers in the robust first two PC's space. This is checked by using diagnostic plots : 
+<<>>=
+Z2.rob.mcd <- covMcd(Z.approx.rob,)
+tolEllipsePlot(Z.approx.rob,classic = T)
+plot(Z2.rob.mcd,which = c("distance"),classic = TRUE)
+Z2.rob.outfree <- Z.approx.rob[Z2.rob.mcd$best,]
+ggplot(aes(x=PC1,y=PC2),data=Z2.rob.outfree)+theme_bw()+geom_point()+stat_ellipse()
+@
+There seems to be no association between PC1 and PC2, which makes much more sense. Eventually, an estimation for rock 1 composition is
+<<>>=
+df.majors.out.free <- df.majors[Z2.rob.mcd$best,]
+df.majors.out.free.clr <- data.frame(clr(df.majors.out.free)) 
+clr.mean <- colMeans(df.majors.out.free.clr)
+clr.cov <- Cov(df.majors.out.free.clr)
+
+mean.estimate <- as.vector(clrInv(clr.mean))
+cov.estimate <- clrInv(as.matrix(clr.cov$cov))
+@
+How does it compare with the naive estimates of GeoPT ? 
+<<>>=
+mean.naive <- colMeans(clo(df.majors))
+od <- outCoDa(df.majors, quantile = 0.975, method = "robust", alpha = 0.9, coda = TRUE)
+df.major.wo.outliers <- df.majors[od$outlierIndex,]
+mean.naive.wo.outlier <- colMeans(clo(df.major.wo.outliers))
+@
+Not much difference for SiO2 \emph{but} TiO2 concentration is twice as high in the naive way, 5 times higher in the naive way when removing outliers. MnO concentration is 10 times higher in the naive way. 
+<<>>=
+df <- data.frame(mean.estimate,mean.naive,mean.naive.wo.outlier)
+df
+df$element <- row.names(df)
+df.plot <- df %>% pivot_longer(cols=starts_with("mean"))
+df.plot
+df.plot$group <- ifelse(df.plot$element %in% c("SiO2","Al2O3"),yes = "large","small")
+ggplot(aes(x=element,y=value),data = df.plot)+geom_col(aes(fill=name),position = "dodge")+theme_bw()+facet_grid(group~.,scales = "free")+scale_color_viridis_d()
+@
+Preliminary conclusion : naive without outlier downplay the concentration of elements present in large quantities and blow the concentration of elements present in small quantities.
 
 
 

@@ -12,6 +12,7 @@ library(patchwork)
 library(compositions)
 library(ggfortify)
 library(ggrepel)
+library(robCompositions)
 set.seed(1)
 # Start with most recent dataset
 
@@ -52,8 +53,8 @@ biplot(pca.clr)
 # Let's check that.
 # Extract the score matrix
 X <- pca.clr$x
-df <- X[,c(1,2)]
-
+df <- data.frame(X[,c(1,2)])
+ggplot(aes(x=PC1,y=PC2),data=df)+geom_point()
 df.fmcd <- covMcd(df,alpha = 0.95)
 
 plot(df.fmcd,which = "tolEllipse",classic=TRUE)
@@ -67,3 +68,16 @@ p_comp_rob <- pcaCoDa(df.majors, method = "robust")
 summary(p_comp_rob)
 biplot(p_comp)
 biplot(p_comp_rob)
+
+p_comp_rob
+# Outlier detection with the outCoDa function which uses Fast-MCD :
+# References : "Outlier detection for compositional data using robust methods.
+# Math. Geosciences""
+
+df.outl <- df.majors[od$outlierIndex,]
+pca.res <- pcaCoDa(df.outl)
+biplot(pca.res)
+df.outl.clr <- clr(df.major.wo.outliers)
+pca.res <- prcomp(df.outl.clr,scale = T,center =T)
+
+autoplot(pca.res)
