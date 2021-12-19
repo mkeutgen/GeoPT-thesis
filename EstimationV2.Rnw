@@ -1,3 +1,4 @@
+% This document, similar to Estimation.Rnw, takes into account the remarks of advisors given during the meeting of the 6th of December 2021.
 
 \documentclass[a4paper,oneside,12pt,titlepage]{article}
 
@@ -52,20 +53,33 @@ geomean <- function(x){
 <<echo=TRUE, cache=TRUE>>=
 setwd("/home/max/Documents/MStatistics/MA2/Thesis/Repository/")
 data <- read_csv("data/raw/GeoPT48 -84Ra.csv")
+data2 <- read_csv("data/raw/GeoPT46 -84Ra.csv")
 @
 Then, one looks at the subcomposition of major elements :
 <<>>=
 sel <-c("SiO2","TiO2","Al2O3","Fe2O3T","MnO","MgO","CaO","Na2O",
         "K2O","P2O5")
 
-df.majors <- select(data,all_of(sel))
+df.majors.raw <- select(data,all_of(sel))
+df.majors2.raw <- select(data2,all_of(sel))
 
-# data cleaning
-df.majors <- df.majors[rowSums(is.na(df.majors)) != ncol(df.majors),]
+# data cleaning we remove all columns filled with NA
+df.majors <- df.majors.raw[rowSums(is.na(df.majors.raw)) != ncol(df.majors.raw),]
+df.majors2 <- data.frame(clo(df.majors2.raw[rowSums(is.na(df.majors2.raw)) != ncol(df.majors2.raw),]))
 
 # closure operation
 df.majors <- data.frame(clo(df.majors))
+dim(df.majors.raw) # 97 observations
+dim(df.majors) # 86 observations
+
+# remove columns containing even only one missing value
+df.majors.nafree <- df.majors.raw[rowSums(is.na(df.majors.raw)) == 0,] # 62 observations
+df.majors2.nafree <- df.majors2.raw[rowSums(is.na(df.majors2.raw)) == 0,] # 78 observations
+
+
 @
+
+
 Then  missing values are imputed by the column geometric mean
 <<>>=
 geomean.v <- sapply(rbind(df.majors),geomean)
@@ -84,15 +98,67 @@ U^D = \Big\{[u_1,..,u_D] : \sum_{i=1}^D = 0  \Big\}
 \end{align*}
 
 <<echo=TRUE, cache=FALSE>>=
-cr.df <- data.frame()
-clr.df <- data.frame()
-# cr.df, divide each entries in a column by 
-# the geometric mean of this column
-cr.df <- sweep(df.majors,MARGIN = 2,FUN="/",STATS = geomean.v)
-# clr.df is the natural logarithm of cr.df. 
-# Now this dataframe contains clr components
-clr.df <- log(cr.df)
+clr.df <- clr(df.majors)
+clr.df.nafree <- clr(df.majors.nafree)
+clr.df.nafree2 <- clr(df.majors2.nafree)
 @
+
+\section{Outlier Detection}
+
+<<>>=
+# outlier detection on the dataframe where missing values entries are replaced with column mean : 
+ilrdf.mcd <- covMcd(clr2ilr(clr.df))
+tolEllipsePlot(clr.df,classic = T,m.cov = clrdf.mcd)
+1-length(ilrdf.mcd$best)/nrow(clr.df) # 44 % of outliers in this approach
+
+# outlier detection on the dataframe where missing values are not taken into account
+ilrdf.nafree.mcd <- covMcd(clr2ilr(clr.df.nafree))
+plot(ilrdf.nafree.mcd,which = c("distance"),classic = TRUE) 
+1-length(ilrdf.nafree.mcd$best)/nrow(clr.df.nafree) # 43 % of outliers in this approach
+
+@
+
+Is this proportion of outliers so high a particularity of the rock ? No, one sees that with the dataframe GeoPT46, again we flag almost 43\% of observations as outliers, this is too much for practical reasons. 
+cov.mcd has a default parameter alpha which is the proportion of the total sample size to take a subset of through the relationship :
+\begin{align}
+\alpha \times n = h
+\end{align}
+We can take alpha = 0.80 so this means the breakdown value of our estimator would be 20 \%.
+<<>>=
+# A. outlier detection on the dataframe where missing values entries are replaced with column mean : 
+ilrdf.mcd <- covMcd(clr2ilr(clr.df),alpha = .80)
+
+plot(ilrdf.mcd,which = c("distance"),classic = TRUE) 
+1-length(ilrdf.mcd$best)/nrow(clr.df) # 18 % of outliers in this approach
+out <- c(2,7,35,28,42,51,52,35,47,73,81,84,78,45)
+out.free <- clr.df[-out,]
+# B. outlier detection on the dataframe where missing values are not taken into account
+ilrdf.na.free.mcd <- covMcd(clr2ilr(clr.df.nafree),alpha = .80)
+plot(ilrdf.nafree.mcd,which = c("distance"),classic = TRUE) 
+
+1-length(ilrdf.nafree.mcd$best)/nrow(clr.df.nafree) ## 22 % of outliers
+
+# We conduct SVD decomposition on the dataset without the 10 outliers (non robust method).
+
+<<>>=
+threshold <- sqrt(qchisq(p = 0.975, df = ncol(clr.df.nafree)))
+outliers <-  which(ilrdf.nafree.mcd$mah >= threshold) # gives the 
+#row numbers of outliers
+out <- c(1,10,13,26,33,34,41,62,70,71)
+nafree.out.free <- clr.df.nafree[-out,]
+
+@
+
+Conduct PCA on the dataset without missing values and without outliers.
+
+
+<<>>=
+ilrdf2.mcd <- covMcd(clr2ilr(clr.df.nafree2),alpha = .8)
+plot(ilrdf2.mcd,which = c("distance"),classic = TRUE) 
+1-length(ilrdf2.mcd$best)/nrow(clr.df.nafree2) # 17 % outliers in this approach, on a second dataset. 
+@
+
+
 Then principal component analysis is conducted.
 Z denotes the mean-centered data matrix X :  
 \begin{align*}
@@ -109,8 +175,15 @@ $Z^*$ denotes the projection of the mean-centered data matrix on a space of dime
 
 
 <<echo=TRUE, cache=FALSE>>=
-pca.clr <- prcomp(clr.df,scale = T,rank. = ncol(clr.df)-1 )
+
+# pca.clr <- prcomp(out.free[-c(33,72),],scale = T)
+pca.clr <- prcomp(out.free,scale = T)
+
 summary(pca.clr)
+# repeat for nafree df
+pca.clr.nafree <- prcomp(nafree.out.free,scale = T,rank. = ncol(clr.df)-1 )
+summary(pca.clr.nafree)
+
 @
 The importance of a component, in terms of proportion of variance explained, is directly related to the D matrix whose eigenvalues squared are directly related to the proportion of variance explained through the relationship : 
 \begin{align} \label{variancepca}
@@ -122,19 +195,44 @@ Now, one looks at the rank-two approximation of Z (as the biplot does) :
 <<>>=
 # autoplot
 autoplot(pca.clr,loadings=T,loadings.label=T)+theme_bw()
+autoplot(pca.clr.nafree,loadings=T,loadings.label=T)+theme_bw()
+
 # manually extracting the rank 2 approximation of Z
 Z.approx <- data.frame(pca.clr$x[,c(1,2)])
 colnames(Z.approx) = c("PC1","PC2")
-ggplot(aes(x=PC1,y=PC2),data=Z.approx)+theme_bw()+geom_point()
+Z.approx <- Z.approx %>% mutate(outlier="no")
+# project outlying points in the first 2 PC space :
+outliers.proj <- scale(clr.df[out,],pca.clr$center,pca.clr$scale) %*% t(pca.clr$rotation)
+predict(pca.clr,clr.df[out])
+outliers.coord <- data.frame(outliers.proj[,1:2])
+names(outliers.coord) <- c("PC1","PC2")
+outliers.coord <- outliers.coord %>% mutate(outlier="yes")
+df.outfree <- rbind(Z.approx,outliers.coord)
+ggplot(aes(x=PC1,y=PC2),data=df.outfree)+theme_bw()+geom_point(aes(colour=outlier))
 @
-Flagging the outliers, remarkable discrepancy between robust method (MCD estimator of the location, MCD is affine equivariant and has a high breakdown value) vs classical method (sample covariance matrix). 
+Very strange thing going on here. The outliers does not appear to be outlying at all.
+Observations 33 and 73 are also very strange. 
+
 <<>>=
-Z2.mcd <- covMcd(Z.approx,alpha = 0.75)
-tolEllipsePlot(Z.approx,classic = T,m.cov = Z2.mcd)
-plot(Z2.mcd,which = c("distance"),classic = TRUE)
-Z2.outfree <- Z.approx[Z2.mcd$best,]
-nrow(Z2.outfree)/nrow(Z.approx)
+# manually extracting the rank 2 approximation of Z
+Z.approx <- data.frame(pca.clr.nafree$x[,c(1,2)])
+colnames(Z.approx) = c("PC1","PC2")
+Z.approx <- Z.approx %>% mutate(outlier="no")
+# project outlying points in the first 2 PC space :
+outliers.proj <- scale(clr.df.nafree[out,],pca.clr$center,pca.clr$scale) %*% t(pca.clr$rotation)
+predict(pca.clr,clr.df[out])
+outliers.coord <- data.frame(outliers.proj[,1:2])
+names(outliers.coord) <- c("PC1","PC2")
+outliers.coord <- outliers.coord %>% mutate(outlier="yes")
+df.outfree <- rbind(Z.approx,outliers.coord)
+ggplot(aes(x=PC1,y=PC2),data=df.outfree)+theme_bw()+geom_point(aes(colour=outlier))
+
 @
+
+
+
+
+
 This approach has a pitfall. The estimation of the PC is itself not robust. Robcompositions package provides a robust PCA estimation method :
 \begin{quote}
 The compositional data set is expressed in isometric logratio coordinates. Afterwards, robust principal component analysis is performed. Resulting loadings and scores are back-transformed to the clr space where the compositional biplot can be shown. CITE ROBCOMP R package

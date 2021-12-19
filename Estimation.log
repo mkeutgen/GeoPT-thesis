@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2021.11.16)  5 DEC 2021 22:53
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2021.11.16)  6 DEC 2021 10:00
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -439,210 +439,327 @@ LaTeX Warning: No \author given.
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-Package color Info: Redefining color shadecolor on input line 79.
+Package color Info: Redefining color shadecolor on input line 88.
 LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 8
-2.
+9.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
-) [1]
-Package color Info: Redefining color shadecolor on input line 137.
+)
 LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 139.
-Package color Info: Redefining color shadecolor on input line 148.
- [2]
+(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 90.
+Package color Info: Redefining color shadecolor on input line 99.
+Package color Info: Redefining color shadecolor on input line 111.
+ [1]
+Package color Info: Redefining color shadecolor on input line 131.
 Package color Info: Redefining color shadecolor on input line 160.
-Package color Info: Redefining color shadecolor on input line 180.
-Package color Info: Redefining color shadecolor on input line 209.
 
-Overfull \hbox (26.2883pt too wide) in paragraph at lines 224--224
+Overfull \hbox (26.2883pt too wide) in paragraph at lines 175--175
 []\T1/cmtt/m/n/12 ##                           PC1    PC2    PC3     PC4     PC
 5     PC6     PC7[] 
  []
 
 
-Overfull \hbox (26.2883pt too wide) in paragraph at lines 224--224
+Overfull \hbox (26.2883pt too wide) in paragraph at lines 175--175
 []\T1/cmtt/m/n/12 ## Standard deviation     2.5272 1.1288 1.0464 0.72257 0.5962
 0 0.48113 0.23209[] 
  []
 
 
-Overfull \hbox (26.2883pt too wide) in paragraph at lines 224--224
+Overfull \hbox (26.2883pt too wide) in paragraph at lines 175--175
 []\T1/cmtt/m/n/12 ## Proportion of Variance 0.6387 0.1274 0.1095 0.05221 0.0355
 5 0.02315 0.00539[] 
  []
 
 
-Overfull \hbox (26.2883pt too wide) in paragraph at lines 224--224
+Overfull \hbox (26.2883pt too wide) in paragraph at lines 175--175
 []\T1/cmtt/m/n/12 ## Cumulative Proportion  0.6387 0.7661 0.8756 0.92779 0.9633
 4 0.98649 0.99187[] 
  []
 
-[3]
-Package color Info: Redefining color shadecolor on input line 235.
-<figure/unnamed-chunk-7-1.pdf, id=29, 505.89pt x 505.89pt>
+[2]
+Package color Info: Redefining color shadecolor on input line 186.
+<figure/unnamed-chunk-7-1.pdf, id=26, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-7-1.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-7-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-7-1.pdf  used on input line 241.
+Package pdftex.def Info: figure/unnamed-chunk-7-1.pdf  used on input line 192.
 (pdftex.def)             Requested size: 455.24411pt x 455.25046pt.
 
-Overfull \hbox (17.62482pt too wide) in paragraph at lines 241--242
+Overfull \hbox (17.62482pt too wide) in paragraph at lines 192--193
 [][] 
  []
 
-[4]
-<figure/unnamed-chunk-7-2.pdf, id=33, 505.89pt x 505.89pt>
+[3 <./figure/unnamed-chunk-7-1.pdf>]
+<figure/unnamed-chunk-7-2.pdf, id=35, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-7-2.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-7-2.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-7-2.pdf  used on input line 249.
+Package pdftex.def Info: figure/unnamed-chunk-7-2.pdf  used on input line 200.
 (pdftex.def)             Requested size: 455.24411pt x 455.25046pt.
-Package color Info: Redefining color shadecolor on input line 253.
+Package color Info: Redefining color shadecolor on input line 204.
 
-Overfull \hbox (17.62482pt too wide) in paragraph at lines 249--253
+Overfull \hbox (17.62482pt too wide) in paragraph at lines 200--204
 [][]
  []
 
-[5 <./figure/unnamed-chunk-7-1.pdf>]
-<figure/unnamed-chunk-8-1.pdf, id=42, 505.89pt x 505.89pt>
+<figure/unnamed-chunk-8-1.pdf, id=36, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-8-1.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-8-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-8-1.pdf  used on input line 259.
+Package pdftex.def Info: figure/unnamed-chunk-8-1.pdf  used on input line 210.
 (pdftex.def)             Requested size: 455.24411pt x 455.25046pt.
 
-Overfull \hbox (17.62482pt too wide) in paragraph at lines 259--260
+Overfull \hbox (17.62482pt too wide) in paragraph at lines 210--211
 [][] 
  []
 
-[6 <./figure/unnamed-chunk-7-2.pdf>]
-<figure/unnamed-chunk-8-2.pdf, id=52, 505.89pt x 505.89pt>
+[4 <./figure/unnamed-chunk-7-2.pdf>]
+<figure/unnamed-chunk-8-2.pdf, id=45, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-8-2.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-8-2.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-8-2.pdf  used on input line 264.
+Package pdftex.def Info: figure/unnamed-chunk-8-2.pdf  used on input line 215.
 (pdftex.def)             Requested size: 455.24411pt x 455.25046pt.
 
-Overfull \hbox (17.62482pt too wide) in paragraph at lines 264--265
+Overfull \hbox (17.62482pt too wide) in paragraph at lines 215--216
 [][] 
  []
 
-[7 <./figure/unnamed-chunk-8-1.pdf>]
-Overfull \hbox (32.46179pt too wide) in paragraph at lines 267--267
+[5 <./figure/unnamed-chunk-8-1.pdf>]
+Overfull \hbox (32.46179pt too wide) in paragraph at lines 218--218
 [][]\T1/cmtt/m/n/12 ggplot[][]([][]aes[][]([][]x[][]=PC1,[][]y[][]=PC2),[][]dat
 a[][]=Z2.outfree)[][]+[][]theme_bw[][]()[][]+[][]geom_point[][]()[][]+[][]stat_
 ellipse[][]()[][] 
  []
 
-<figure/unnamed-chunk-8-3.pdf, id=62, 505.89pt x 505.89pt>
+<figure/unnamed-chunk-8-3.pdf, id=55, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-8-3.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-8-3.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-8-3.pdf  used on input line 270.
+Package pdftex.def Info: figure/unnamed-chunk-8-3.pdf  used on input line 221.
 (pdftex.def)             Requested size: 455.24411pt x 455.25046pt.
 
-Overfull \hbox (17.62482pt too wide) in paragraph at lines 270--273
+Overfull \hbox (17.62482pt too wide) in paragraph at lines 221--224
 [][]
  []
 
-[8 <./figure/unnamed-chunk-8-2.pdf>]
-Package color Info: Redefining color shadecolor on input line 277.
+[6 <./figure/unnamed-chunk-8-2.pdf>]
+Package color Info: Redefining color shadecolor on input line 228.
 
-Overfull \hbox (32.46179pt too wide) in paragraph at lines 292--292
+Overfull \hbox (32.46179pt too wide) in paragraph at lines 243--243
 []\T1/cmtt/m/n/12 ##                           Comp.1     Comp.2     Comp.3    
  Comp.4     Comp.5[] 
  []
 
 
-Overfull \hbox (32.46179pt too wide) in paragraph at lines 292--292
-[]\T1/cmtt/m/n/12 ## Standard deviation     0.1314855 0.02931199 0.02737938 0.0
-2224540 0.01728865[] 
+Overfull \hbox (32.46179pt too wide) in paragraph at lines 243--243
+[]\T1/cmtt/m/n/12 ## Standard deviation     0.1253479 0.03149760 0.02812230 0.0
+2340062 0.01896927[] 
  []
 
 
-Overfull \hbox (32.46179pt too wide) in paragraph at lines 292--292
-[]\T1/cmtt/m/n/12 ## Proportion of Variance 0.8597491 0.04272744 0.03727892 0.0
-2460915 0.01486409[] 
+Overfull \hbox (32.46179pt too wide) in paragraph at lines 243--243
+[]\T1/cmtt/m/n/12 ## Proportion of Variance 0.8331335 0.05260606 0.04193556 0.0
+2903592 0.01908016[] 
  []
 
 
-Overfull \hbox (32.46179pt too wide) in paragraph at lines 292--292
-[]\T1/cmtt/m/n/12 ## Cumulative Proportion  0.8597491 0.90247650 0.93975542 0.9
-6436457 0.97922866[] 
+Overfull \hbox (32.46179pt too wide) in paragraph at lines 243--243
+[]\T1/cmtt/m/n/12 ## Cumulative Proportion  0.8331335 0.88573954 0.92767510 0.9
+5671102 0.97579118[] 
  []
 
-[9 <./figure/unnamed-chunk-8-3.pdf>]
-Package color Info: Redefining color shadecolor on input line 297.
-<figure/unnamed-chunk-10-1.pdf, id=80, 505.89pt x 505.89pt>
+[7 <./figure/unnamed-chunk-8-3.pdf>]
+Package color Info: Redefining color shadecolor on input line 248.
+<figure/unnamed-chunk-10-1.pdf, id=74, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-10-1.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-10-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-10-1.pdf  used on input line 304.
+Package pdftex.def Info: figure/unnamed-chunk-10-1.pdf  used on input line 255.
 
 (pdftex.def)             Requested size: 455.24411pt x 455.25046pt.
-Package color Info: Redefining color shadecolor on input line 308.
+Package color Info: Redefining color shadecolor on input line 259.
 
-Overfull \hbox (17.62482pt too wide) in paragraph at lines 304--308
+Overfull \hbox (17.62482pt too wide) in paragraph at lines 255--259
 [][]
  []
 
-[10 <./figure/unnamed-chunk-10-1.pdf>]
-<figure/unnamed-chunk-11-1.pdf, id=89, 505.89pt x 505.89pt>
+[8 <./figure/unnamed-chunk-10-1.pdf>]
+<figure/unnamed-chunk-11-1.pdf, id=83, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-11-1.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-11-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-11-1.pdf  used on input line 314.
+Package pdftex.def Info: figure/unnamed-chunk-11-1.pdf  used on input line 265.
 
 (pdftex.def)             Requested size: 455.24411pt x 455.25046pt.
 
-Overfull \hbox (17.62482pt too wide) in paragraph at lines 314--315
+Overfull \hbox (17.62482pt too wide) in paragraph at lines 265--266
 [][] 
  []
 
-<figure/unnamed-chunk-11-2.pdf, id=90, 505.89pt x 505.89pt>
+<figure/unnamed-chunk-11-2.pdf, id=84, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-11-2.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-11-2.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-11-2.pdf  used on input line 319.
+Package pdftex.def Info: figure/unnamed-chunk-11-2.pdf  used on input line 270.
 
 (pdftex.def)             Requested size: 455.24411pt x 455.25046pt.
 
-Overfull \hbox (17.62482pt too wide) in paragraph at lines 319--320
+Overfull \hbox (17.62482pt too wide) in paragraph at lines 270--271
 [][] 
  []
 
-[11 <./figure/unnamed-chunk-11-1.pdf>]
-Overfull \hbox (57.15576pt too wide) in paragraph at lines 322--322
+[9 <./figure/unnamed-chunk-11-1.pdf>]
+Overfull \hbox (57.15576pt too wide) in paragraph at lines 273--273
 [][]\T1/cmtt/m/n/12 ggplot[][]([][]aes[][]([][]x[][]=PC1,[][]y[][]=PC2),[][]dat
 a[][]=Z2.rob.outfree)[][]+[][]theme_bw[][]()[][]+[][]geom_point[][]()[][]+[][]s
 tat_ellipse[][]()[][] 
  []
 
-<figure/unnamed-chunk-11-3.pdf, id=100, 505.89pt x 505.89pt>
+<figure/unnamed-chunk-11-3.pdf, id=94, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-11-3.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-11-3.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-11-3.pdf  used on input line 325.
+Package pdftex.def Info: figure/unnamed-chunk-11-3.pdf  used on input line 276.
 
 (pdftex.def)             Requested size: 455.24411pt x 455.25046pt.
-Package color Info: Redefining color shadecolor on input line 329.
+Package color Info: Redefining color shadecolor on input line 280.
 
-Overfull \hbox (17.62482pt too wide) in paragraph at lines 325--329
+Overfull \hbox (17.62482pt too wide) in paragraph at lines 276--280
 [][]
  []
 
-[12 <./figure/unnamed-chunk-11-2.pdf>]
-Package color Info: Redefining color shadecolor on input line 343.
+[10 <./figure/unnamed-chunk-11-2.pdf>]
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## SiO2   "0.10001128" "0.10000217" "0.09999462" "0.10000478"
+ "0.09999436"[] 
+ []
 
-Overfull \hbox (81.84973pt too wide) in paragraph at lines 346--346
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## TiO2   "0.10000216" "0.10003559" "0.09999296" "0.09999844"
+ "0.10000563"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## Al2O3  "0.09999461" "0.09999295" "0.10007133" "0.09997229"
+ "0.09995735"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## Fe2O3T "0.10000478" "0.09999844" "0.09997229" "0.10004305"
+ "0.10000978"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## MnO    "0.09999435" "0.10000562" "0.09995734" "0.10000978"
+ "0.10012407"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## MgO    "0.09999526" "0.09997199" "0.09998626" "0.09999430"
+ "0.09998264"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## CaO    "0.09999876" "0.10000198" "0.10001290" "0.09999585"
+ "0.09998321"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## Na2O   "0.09999735" "0.09998972" "0.09998627" "0.09998342"
+ "0.09999514"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## K2O    "0.10000055" "0.09999952" "0.10002800" "0.09999778"
+ "0.09997054"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## P2O5   "0.10000086" "0.10000198" "0.09999805" "0.10000030"
+ "0.09997734"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## SiO2   "0.09999527" "0.09999876" "0.09999735" "0.10000056"
+ "0.10000086"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## TiO2   "0.09997200" "0.10000198" "0.09998972" "0.09999952"
+ "0.10000198"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## Al2O3  "0.09998626" "0.10001289" "0.09998627" "0.10002800"
+ "0.09999804"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## Fe2O3T "0.09999431" "0.09999585" "0.09998342" "0.09999778"
+ "0.10000030"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## MnO    "0.09998264" "0.09998320" "0.09999513" "0.09997053"
+ "0.09997733"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## MgO    "0.10011263" "0.09999039" "0.10000429" "0.09996256"
+ "0.09999967"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## CaO    "0.09999040" "0.10002174" "0.09999453" "0.10000190"
+ "0.09999873"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## Na2O   "0.10000429" "0.09999453" "0.10007487" "0.09998931"
+ "0.09998510"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## K2O    "0.09996257" "0.10000190" "0.09998931" "0.10004847"
+ "0.10000135"[] 
+ []
+
+
+Overfull \hbox (1.59433pt too wide) in paragraph at lines 316--316
+[]\T1/cmtt/m/n/12 ## P2O5   "0.09999968" "0.09999873" "0.09998511" "0.10000135"
+ "0.10003660"[] 
+ []
+
+[11 <./figure/unnamed-chunk-11-3.pdf>]
+Package color Info: Redefining color shadecolor on input line 321.
+
+Overfull \hbox (81.84973pt too wide) in paragraph at lines 324--324
 [][]\T1/cmtt/m/n/12 od[] []<-[] []outCoDa[][](df.majors,[] []quantile[] []=[] [
 ]0.975[][],[] []method[] []=[] []"robust"[][],[] []alpha[] []=[] []0.9[][],[] [
 ]coda[] []=[] []TRUE[][])[][] 
  []
 
-[13 <./figure/unnamed-chunk-11-3.pdf>]
-Package color Info: Redefining color shadecolor on input line 354.
+Package color Info: Redefining color shadecolor on input line 332.
 
-Overfull \hbox (69.50275pt too wide) in paragraph at lines 394--394
+Overfull \hbox (69.50275pt too wide) in paragraph at lines 372--372
 [][]\T1/cmtt/m/n/12 df.plot[][]$[][]group[] []<-[] []ifelse[][](df.plot[][]$[][
 ]element[] []%in%[] []c[][]([][]"SiO2"[][],[][]"Al2O3"[][]),[][]yes[] []=[] []"
 large"[][],[][]"small"[][])[][] 
  []
 
 
-Overfull \hbox (532.51468pt too wide) in paragraph at lines 395--395
+Overfull \hbox (532.51468pt too wide) in paragraph at lines 373--373
 [][]\T1/cmtt/m/n/12 ggplot[][]([][]aes[][]([][]x[][]=element,[][]y[][]=value),[
 ][]data[] []= df.plot)[][]+[][]geom_col[][]([][]aes[][]([][]fill[][]=name),[][]
 position[] []=[] []"dodge"[][])[][]+[][]theme_bw[][]()[][]+[][]facet_grid[][](g
@@ -650,30 +767,31 @@ roup[][]~[][].,[][]scales[] []=[] []"free"[][])[][]+[][]scale_color_viridis_d[]
 []()[][] 
  []
 
-<figure/unnamed-chunk-14-1.pdf, id=119, 505.89pt x 505.89pt>
+[12]
+<figure/unnamed-chunk-14-1.pdf, id=117, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-14-1.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-14-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-14-1.pdf  used on input line 398.
+Package pdftex.def Info: figure/unnamed-chunk-14-1.pdf  used on input line 376.
 
 (pdftex.def)             Requested size: 455.24411pt x 455.25046pt.
 
-Overfull \hbox (17.62482pt too wide) in paragraph at lines 398--401
+Overfull \hbox (17.62482pt too wide) in paragraph at lines 376--379
 [][]
  []
 
-[14] [15 <./figure/unnamed-chunk-14-1.pdf>] (./Estimation.aux) ) 
+[13] [14 <./figure/unnamed-chunk-14-1.pdf>] (./Estimation.aux) ) 
 Here is how much of TeX's memory you used:
  6844 strings out of 483065
  142965 string characters out of 5963549
- 390319 words of memory out of 5000000
+ 392319 words of memory out of 5000000
  21760 multiletter control sequences out of 15000+600000
  548984 words of font info for 80 fonts, out of 8000000 for 9000
  81 hyphenation exceptions out of 8191
- 38i,12n,40p,501b,274s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,12n,40p,501b,275s stack positions out of 5000i,500n,10000p,200000b,80000s
  </home/max/.te
 xlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1200.600pk> </home/max/.tex
-live2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1200.600pk> </home/max/.texl
-ive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecit1200.600pk> </home/max/.texli
+live2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecit1200.600pk> </home/max/.texl
+ive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1200.600pk> </home/max/.texli
 ve2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1200.600pk> </home/max/.texliv
 e2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1440.600pk> </home/max/.texlive
 2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm2074.600pk></usr/share/texlive/t
@@ -686,10 +804,10 @@ fonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
 /cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8
 .pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.
 pfb>
-Output written on Estimation.pdf (16 pages, 272107 bytes).
+Output written on Estimation.pdf (15 pages, 263802 bytes).
 PDF statistics:
- 425 PDF objects out of 1000 (max. 8388607)
- 132 compressed objects within 2 object streams
+ 396 PDF objects out of 1000 (max. 8388607)
+ 130 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  51 words of extra memory for PDF output out of 10000 (max. 10000000)
 

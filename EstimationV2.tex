@@ -1,3 +1,4 @@
+% This document, similar to Estimation.Rnw, takes into account the remarks of advisors given during the meeting of the 6th of December 2021.
 
 \documentclass[a4paper,oneside,12pt,titlepage]{article}\usepackage[]{graphicx}\usepackage[]{color}
 % maxwidth is the original width if it is less than linewidth
@@ -92,7 +93,14 @@ One begin by importing a dataset, for example GeoPT48, a monzonite.
 \end{alltt}
 
 
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# -- Column specification --------------------------------------------------------\\\#\# cols(\\\#\# \ \ .default = col\_double(),\\\#\# \ \ Laboratory = col\_character(),\\\#\# \ \ Au = col\_logical(),\\\#\# \ \ N = col\_logical(),\\\#\# \ \ Os = col\_logical()\\\#\# )\\\#\# i Use `spec()` for the full column specifications.}}\end{kframe}
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# -- Column specification --------------------------------------------------------\\\#\# cols(\\\#\# \ \ .default = col\_double(),\\\#\# \ \ Laboratory = col\_character(),\\\#\# \ \ Au = col\_logical(),\\\#\# \ \ N = col\_logical(),\\\#\# \ \ Os = col\_logical()\\\#\# )\\\#\# i Use `spec()` for the full column specifications.}}\begin{alltt}
+\hlstd{data2} \hlkwb{<-} \hlkwd{read_csv}\hlstd{(}\hlstr{"data/raw/GeoPT46 -84Ra.csv"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: Missing column names filled in: 'X1' [1]}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# -- Column specification --------------------------------------------------------\\\#\# cols(\\\#\# \ \ .default = col\_double(),\\\#\# \ \ Laboratory = col\_character(),\\\#\# \ \ Ir = col\_logical(),\\\#\# \ \ N = col\_logical(),\\\#\# \ \ Os = col\_logical(),\\\#\# \ \ Rh = col\_logical(),\\\#\# \ \ Ru = col\_logical()\\\#\# )\\\#\# i Use `spec()` for the full column specifications.}}\end{kframe}
 \end{knitrout}
 Then, one looks at the subcomposition of major elements :
 \begin{knitrout}
@@ -100,12 +108,36 @@ Then, one looks at the subcomposition of major elements :
 \begin{alltt}
 \hlstd{sel} \hlkwb{<-}\hlkwd{c}\hlstd{(}\hlstr{"SiO2"}\hlstd{,}\hlstr{"TiO2"}\hlstd{,}\hlstr{"Al2O3"}\hlstd{,}\hlstr{"Fe2O3T"}\hlstd{,}\hlstr{"MnO"}\hlstd{,}\hlstr{"MgO"}\hlstd{,}\hlstr{"CaO"}\hlstd{,}\hlstr{"Na2O"}\hlstd{,}
         \hlstr{"K2O"}\hlstd{,}\hlstr{"P2O5"}\hlstd{)}
-\hlstd{df.majors} \hlkwb{<-} \hlkwd{select}\hlstd{(data,}\hlkwd{all_of}\hlstd{(sel))}
+
+\hlstd{df.majors.raw} \hlkwb{<-} \hlkwd{select}\hlstd{(data,}\hlkwd{all_of}\hlstd{(sel))}
+\hlstd{df.majors2.raw} \hlkwb{<-} \hlkwd{select}\hlstd{(data2,}\hlkwd{all_of}\hlstd{(sel))}
+
+\hlcom{# data cleaning we remove all columns filled with NA}
+\hlstd{df.majors} \hlkwb{<-} \hlstd{df.majors.raw[}\hlkwd{rowSums}\hlstd{(}\hlkwd{is.na}\hlstd{(df.majors.raw))} \hlopt{!=} \hlkwd{ncol}\hlstd{(df.majors.raw),]}
+\hlstd{df.majors2} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwd{clo}\hlstd{(df.majors2.raw[}\hlkwd{rowSums}\hlstd{(}\hlkwd{is.na}\hlstd{(df.majors2.raw))} \hlopt{!=} \hlkwd{ncol}\hlstd{(df.majors2.raw),]))}
+
 \hlcom{# closure operation}
 \hlstd{df.majors} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwd{clo}\hlstd{(df.majors))}
+\hlkwd{dim}\hlstd{(df.majors.raw)} \hlcom{# 97 observations}
+\end{alltt}
+\begin{verbatim}
+## [1] 97 10
+\end{verbatim}
+\begin{alltt}
+\hlkwd{dim}\hlstd{(df.majors)} \hlcom{# 86 observations}
+\end{alltt}
+\begin{verbatim}
+## [1] 86 10
+\end{verbatim}
+\begin{alltt}
+\hlcom{# remove columns containing even only one missing value}
+\hlstd{df.majors.nafree} \hlkwb{<-} \hlstd{df.majors.raw[}\hlkwd{rowSums}\hlstd{(}\hlkwd{is.na}\hlstd{(df.majors.raw))} \hlopt{==} \hlnum{0}\hlstd{,]} \hlcom{# 62 observations}
+\hlstd{df.majors2.nafree} \hlkwb{<-} \hlstd{df.majors2.raw[}\hlkwd{rowSums}\hlstd{(}\hlkwd{is.na}\hlstd{(df.majors2.raw))} \hlopt{==} \hlnum{0}\hlstd{,]} \hlcom{# 78 observations}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
+
+
 Then  missing values are imputed by the column geometric mean
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -130,17 +162,106 @@ U^D = \Big\{[u_1,..,u_D] : \sum_{i=1}^D = 0  \Big\}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{cr.df} \hlkwb{<-} \hlkwd{data.frame}\hlstd{()}
-\hlstd{clr.df} \hlkwb{<-} \hlkwd{data.frame}\hlstd{()}
-\hlcom{# cr.df, divide each entries in a column by }
-\hlcom{# the geometric mean of this column}
-\hlstd{cr.df} \hlkwb{<-} \hlkwd{sweep}\hlstd{(df.majors,}\hlkwc{MARGIN} \hlstd{=} \hlnum{2}\hlstd{,}\hlkwc{FUN}\hlstd{=}\hlstr{"/"}\hlstd{,}\hlkwc{STATS} \hlstd{= geomean.v)}
-\hlcom{# clr.df is the natural logarithm of cr.df. }
-\hlcom{# Now this dataframe contains clr components}
-\hlstd{clr.df} \hlkwb{<-} \hlkwd{log}\hlstd{(cr.df)}
+\hlstd{clr.df} \hlkwb{<-} \hlkwd{clr}\hlstd{(df.majors)}
+\hlstd{clr.df.nafree} \hlkwb{<-} \hlkwd{clr}\hlstd{(df.majors.nafree)}
+\hlstd{clr.df.nafree2} \hlkwb{<-} \hlkwd{clr}\hlstd{(df.majors2.nafree)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
+
+\section{Outlier Detection}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# outlier detection on the dataframe where missing values entries are replaced with column mean : }
+\hlstd{ilrdf.mcd} \hlkwb{<-} \hlkwd{covMcd}\hlstd{(}\hlkwd{clr2ilr}\hlstd{(clr.df))}
+\hlkwd{tolEllipsePlot}\hlstd{(clr.df,}\hlkwc{classic} \hlstd{= T,}\hlkwc{m.cov} \hlstd{= clrdf.mcd)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in tolEllipsePlot(clr.df, classic = T, m.cov = clrdf.mcd): Dimension \{= ncol(x)\} must be 2!}}\begin{alltt}
+\hlnum{1}\hlopt{-}\hlkwd{length}\hlstd{(ilrdf.mcd}\hlopt{$}\hlstd{best)}\hlopt{/}\hlkwd{nrow}\hlstd{(clr.df)} \hlcom{# 44 % of outliers in this approach}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.4418605
+\end{verbatim}
+\begin{alltt}
+\hlcom{# outlier detection on the dataframe where missing values are not taken into account}
+\hlstd{ilrdf.nafree.mcd} \hlkwb{<-} \hlkwd{covMcd}\hlstd{(}\hlkwd{clr2ilr}\hlstd{(clr.df.nafree))}
+\hlkwd{plot}\hlstd{(ilrdf.nafree.mcd,}\hlkwc{which} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"distance"}\hlstd{),}\hlkwc{classic} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-6-1} 
+\begin{kframe}\begin{alltt}
+\hlnum{1}\hlopt{-}\hlkwd{length}\hlstd{(ilrdf.nafree.mcd}\hlopt{$}\hlstd{best)}\hlopt{/}\hlkwd{nrow}\hlstd{(clr.df.nafree)} \hlcom{# 43 % of outliers in this approach}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.4305556
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Is this proportion of outliers so high a particularity of the rock ? No, one sees that with the dataframe GeoPT46, again we flag almost 43\% of observations as outliers, this is too much for practical reasons. 
+cov.mcd has a default parameter alpha which is the proportion of the total sample size to take a subset of through the relationship :
+\begin{align}
+\alpha \times n = h
+\end{align}
+We can take alpha = 0.75 so this means the breakdown value of our estimator would be 25 \%.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# outlier detection on the dataframe where missing values entries are replaced with column mean : }
+\hlstd{ilrdf.mcd} \hlkwb{<-} \hlkwd{covMcd}\hlstd{(}\hlkwd{clr2ilr}\hlstd{(clr.df),}\hlkwc{alpha} \hlstd{=} \hlnum{.75}\hlstd{)}
+
+\hlkwd{plot}\hlstd{(ilrdf.mcd,}\hlkwc{which} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"distance"}\hlstd{),}\hlkwc{classic} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-1} 
+\begin{kframe}\begin{alltt}
+\hlnum{1}\hlopt{-}\hlkwd{length}\hlstd{(ilrdf.mcd}\hlopt{$}\hlstd{best)}\hlopt{/}\hlkwd{nrow}\hlstd{(clr.df)} \hlcom{# 22 % of outliers in this approach}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.2209302
+\end{verbatim}
+\begin{alltt}
+\hlcom{# outlier detection on the dataframe where missing values are not taken into account}
+\hlstd{ilrdf.nafree.mcd} \hlkwb{<-} \hlkwd{covMcd}\hlstd{(}\hlkwd{clr2ilr}\hlstd{(clr.df.nafree),}\hlkwc{alpha}\hlstd{=}\hlnum{.75}\hlstd{)}
+\hlkwd{plot}\hlstd{(ilrdf.nafree.mcd,}\hlkwc{which} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"distance"}\hlstd{),}\hlkwc{classic} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-2} 
+\begin{kframe}\begin{alltt}
+\hlnum{1}\hlopt{-}\hlkwd{length}\hlstd{(ilrdf.nafree.mcd}\hlopt{$}\hlstd{best)}\hlopt{/}\hlkwd{nrow}\hlstd{(clr.df.nafree)} \hlcom{# 22 % of outliers in this approach with robust detection method. 13 % of outliers with the non robust. }
+\end{alltt}
+\begin{verbatim}
+## [1] 0.2222222
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ilrdf2.mcd} \hlkwb{<-} \hlkwd{covMcd}\hlstd{(}\hlkwd{clr2ilr}\hlstd{(clr.df.nafree2))}
+\hlkwd{plot}\hlstd{(ilrdf2.mcd,}\hlkwc{which} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"distance"}\hlstd{),}\hlkwc{classic} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-8-1} 
+\begin{kframe}\begin{alltt}
+\hlnum{1}\hlopt{-}\hlkwd{length}\hlstd{(ilrdf2.mcd}\hlopt{$}\hlstd{best)}\hlopt{/}\hlkwd{nrow}\hlstd{(clr.df.nafree2)} \hlcom{# 43 % outliers in this approach, again. }
+\end{alltt}
+\begin{verbatim}
+## [1] 0.4358974
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
 Then principal component analysis is conducted.
 Z denotes the mean-centered data matrix X :  
 \begin{align*}
@@ -164,14 +285,30 @@ $Z^*$ denotes the projection of the mean-centered data matrix on a space of dime
 \end{alltt}
 \begin{verbatim}
 ## Importance of first k=9 (out of 10) components:
-##                           PC1    PC2    PC3     PC4     PC5     PC6     PC7
-## Standard deviation     2.5272 1.1288 1.0464 0.72257 0.59620 0.48113 0.23209
-## Proportion of Variance 0.6387 0.1274 0.1095 0.05221 0.03555 0.02315 0.00539
-## Cumulative Proportion  0.6387 0.7661 0.8756 0.92779 0.96334 0.98649 0.99187
+##                           PC1     PC2     PC3    PC4     PC5     PC6     PC7
+## Standard deviation     2.6562 0.97703 0.91318 0.7470 0.56855 0.34083 0.25171
+## Proportion of Variance 0.7055 0.09546 0.08339 0.0558 0.03233 0.01162 0.00634
+## Cumulative Proportion  0.7055 0.80098 0.88437 0.9402 0.97249 0.98411 0.99045
 ##                            PC8     PC9
-## Standard deviation     0.18604 0.17566
-## Proportion of Variance 0.00346 0.00309
-## Cumulative Proportion  0.99533 0.99842
+## Standard deviation     0.24623 0.18687
+## Proportion of Variance 0.00606 0.00349
+## Cumulative Proportion  0.99651 1.00000
+\end{verbatim}
+\begin{alltt}
+\hlcom{# repeat for nafree df}
+\hlstd{pca.clr.nafree} \hlkwb{<-} \hlkwd{prcomp}\hlstd{(clr.df.nafree,}\hlkwc{scale} \hlstd{= T,}\hlkwc{rank.} \hlstd{=} \hlkwd{ncol}\hlstd{(clr.df)}\hlopt{-}\hlnum{1} \hlstd{)}
+\hlkwd{summary}\hlstd{(pca.clr.nafree)}
+\end{alltt}
+\begin{verbatim}
+## Importance of first k=9 (out of 10) components:
+##                           PC1    PC2    PC3     PC4     PC5     PC6     PC7
+## Standard deviation     2.2003 1.4357 1.0267 0.77238 0.73015 0.66663 0.51892
+## Proportion of Variance 0.4841 0.2061 0.1054 0.05966 0.05331 0.04444 0.02693
+## Cumulative Proportion  0.4841 0.6902 0.7957 0.85531 0.90863 0.95307 0.97999
+##                            PC8     PC9
+## Standard deviation     0.37047 0.25063
+## Proportion of Variance 0.01372 0.00628
+## Cumulative Proportion  0.99372 1.00000
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -189,7 +326,12 @@ Now, one looks at the rank-two approximation of Z (as the biplot does) :
 \hlkwd{autoplot}\hlstd{(pca.clr,}\hlkwc{loadings}\hlstd{=T,}\hlkwc{loadings.label}\hlstd{=T)}\hlopt{+}\hlkwd{theme_bw}\hlstd{()}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-1} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-10-1} 
+\begin{kframe}\begin{alltt}
+\hlkwd{autoplot}\hlstd{(pca.clr.nafree,}\hlkwc{loadings}\hlstd{=T,}\hlkwc{loadings.label}\hlstd{=T)}\hlopt{+}\hlkwd{theme_bw}\hlstd{()}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-10-2} 
 \begin{kframe}\begin{alltt}
 \hlcom{# manually extracting the rank 2 approximation of Z}
 \hlstd{Z.approx} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(pca.clr}\hlopt{$}\hlstd{x[,}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{)])}
@@ -197,28 +339,30 @@ Now, one looks at the rank-two approximation of Z (as the biplot does) :
 \hlkwd{ggplot}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x}\hlstd{=PC1,}\hlkwc{y}\hlstd{=PC2),}\hlkwc{data}\hlstd{=Z.approx)}\hlopt{+}\hlkwd{theme_bw}\hlstd{()}\hlopt{+}\hlkwd{geom_point}\hlstd{()}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-2} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-10-3} 
 \end{knitrout}
 Flagging the outliers, remarkable discrepancy between robust method (MCD estimator of the location, MCD is affine equivariant and has a high breakdown value) vs classical method (sample covariance matrix). 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{Z2.mcd} \hlkwb{<-} \hlkwd{covMcd}\hlstd{(Z.approx,)}
-\hlkwd{tolEllipsePlot}\hlstd{(Z.approx,}\hlkwc{classic} \hlstd{= T)}
+\hlstd{Z2.mcd} \hlkwb{<-} \hlkwd{covMcd}\hlstd{(Z.approx,}\hlkwc{alpha} \hlstd{=} \hlnum{0.75}\hlstd{)}
+\hlkwd{tolEllipsePlot}\hlstd{(Z.approx,}\hlkwc{classic} \hlstd{= T,}\hlkwc{m.cov} \hlstd{= Z2.mcd)}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-8-1} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-11-1} 
 \begin{kframe}\begin{alltt}
 \hlkwd{plot}\hlstd{(Z2.mcd,}\hlkwc{which} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"distance"}\hlstd{),}\hlkwc{classic} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-8-2} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-11-2} 
 \begin{kframe}\begin{alltt}
 \hlstd{Z2.outfree} \hlkwb{<-} \hlstd{Z.approx[Z2.mcd}\hlopt{$}\hlstd{best,]}
-\hlkwd{ggplot}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x}\hlstd{=PC1,}\hlkwc{y}\hlstd{=PC2),}\hlkwc{data}\hlstd{=Z2.outfree)}\hlopt{+}\hlkwd{theme_bw}\hlstd{()}\hlopt{+}\hlkwd{geom_point}\hlstd{()}\hlopt{+}\hlkwd{stat_ellipse}\hlstd{()}
+\hlkwd{nrow}\hlstd{(Z2.outfree)}\hlopt{/}\hlkwd{nrow}\hlstd{(Z.approx)}
 \end{alltt}
+\begin{verbatim}
+## [1] 0.755814
+\end{verbatim}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-8-3} 
 \end{knitrout}
 This approach has a pitfall. The estimation of the PC is itself not robust. Robcompositions package provides a robust PCA estimation method :
 \begin{quote}
@@ -232,14 +376,14 @@ The compositional data set is expressed in isometric logratio coordinates. After
 \end{alltt}
 \begin{verbatim}
 ## Importance of components:
-##                           Comp.1     Comp.2     Comp.3     Comp.4     Comp.5
-## Standard deviation     0.1253479 0.03149760 0.02812230 0.02340062 0.01896927
-## Proportion of Variance 0.8331335 0.05260606 0.04193556 0.02903592 0.01908016
-## Cumulative Proportion  0.8331335 0.88573954 0.92767510 0.95671102 0.97579118
-##                            Comp.6     Comp.7      Comp.8       Comp.9
-## Standard deviation     0.01647891 0.01044713 0.007836675 0.0038005573
-## Proportion of Variance 0.01439918 0.00578728 0.003256451 0.0007659058
-## Cumulative Proportion  0.99019036 0.99597764 0.999234094 1.0000000000
+##                           Comp.1     Comp.2     Comp.3     Comp.4    Comp.5
+## Standard deviation     0.0730207 0.03302854 0.03242246 0.02468697 0.0205167
+## Proportion of Variance 0.5873237 0.12016122 0.11579171 0.06713070 0.0463661
+## Cumulative Proportion  0.5873237 0.70748494 0.82327665 0.89040735 0.9367734
+##                            Comp.6     Comp.7      Comp.8      Comp.9
+## Standard deviation     0.01848889 0.01108852 0.009229454 0.004901582
+## Proportion of Variance 0.03765368 0.01354355 0.009382911 0.002646416
+## Cumulative Proportion  0.97442713 0.98797067 0.997353584 1.000000000
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -252,7 +396,7 @@ One sees that the first two PC's found by using the robust method explains (89 \
 \hlkwd{ggplot}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x}\hlstd{=PC1,}\hlkwc{y}\hlstd{=PC2),}\hlkwc{data}\hlstd{=Z.approx.rob)}\hlopt{+}\hlkwd{theme_bw}\hlstd{()}\hlopt{+}\hlkwd{geom_point}\hlstd{()}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-10-1} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-13-1} 
 \end{knitrout}
 At first glance, there seem to be less outliers in the robust first two PC's space. This is checked by using diagnostic plots : 
 \begin{knitrout}
@@ -262,18 +406,18 @@ At first glance, there seem to be less outliers in the robust first two PC's spa
 \hlkwd{tolEllipsePlot}\hlstd{(Z.approx.rob,}\hlkwc{classic} \hlstd{= T)}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-11-1} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-14-1} 
 \begin{kframe}\begin{alltt}
 \hlkwd{plot}\hlstd{(Z2.rob.mcd,}\hlkwc{which} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"distance"}\hlstd{),}\hlkwc{classic} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-11-2} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-14-2} 
 \begin{kframe}\begin{alltt}
 \hlstd{Z2.rob.outfree} \hlkwb{<-} \hlstd{Z.approx.rob[Z2.rob.mcd}\hlopt{$}\hlstd{best,]}
 \hlkwd{ggplot}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x}\hlstd{=PC1,}\hlkwc{y}\hlstd{=PC2),}\hlkwc{data}\hlstd{=Z2.rob.outfree)}\hlopt{+}\hlkwd{theme_bw}\hlstd{()}\hlopt{+}\hlkwd{geom_point}\hlstd{()}\hlopt{+}\hlkwd{stat_ellipse}\hlstd{()}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-11-3} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-14-3} 
 \end{knitrout}
 There seems to be no association between PC1 and PC2, which makes much more sense. Eventually, an estimation for rock 1 composition is
 \begin{knitrout}
@@ -289,28 +433,28 @@ There seems to be no association between PC1 and PC2, which makes much more sens
 \hlstd{cov.estimate}
 \end{alltt}
 \begin{verbatim}
-##        SiO2         TiO2         Al2O3        Fe2O3T       MnO         
-## SiO2   "0.10001128" "0.10000217" "0.09999462" "0.10000478" "0.09999436"
-## TiO2   "0.10000216" "0.10003559" "0.09999296" "0.09999844" "0.10000563"
-## Al2O3  "0.09999461" "0.09999295" "0.10007133" "0.09997229" "0.09995735"
-## Fe2O3T "0.10000478" "0.09999844" "0.09997229" "0.10004305" "0.10000978"
-## MnO    "0.09999435" "0.10000562" "0.09995734" "0.10000978" "0.10012407"
-## MgO    "0.09999526" "0.09997199" "0.09998626" "0.09999430" "0.09998264"
-## CaO    "0.09999876" "0.10000198" "0.10001290" "0.09999585" "0.09998321"
-## Na2O   "0.09999735" "0.09998972" "0.09998627" "0.09998342" "0.09999514"
-## K2O    "0.10000055" "0.09999952" "0.10002800" "0.09999778" "0.09997054"
-## P2O5   "0.10000086" "0.10000198" "0.09999805" "0.10000030" "0.09997734"
+##        SiO2         TiO2         Al2O3        Fe2O3T       MnO        
+## SiO2   "0.10289487" "0.09962841" "0.09987669" "0.09979176" "0.0996833"
+## TiO2   "0.09963294" "0.10007568" "0.10001475" "0.10002610" "0.1000330"
+## Al2O3  "0.09988130" "0.10001482" "0.10002404" "0.10001191" "0.1000105"
+## Fe2O3T "0.09979635" "0.10002615" "0.10001190" "0.10005504" "0.1000140"
+## MnO    "0.09968785" "0.10003302" "0.10001042" "0.10001398" "0.1000981"
+## MgO    "0.09971372" "0.10001797" "0.10000860" "0.10001880" "0.1000277"
+## CaO    "0.09959408" "0.10005293" "0.10000200" "0.10002234" "0.1000343"
+## Na2O   "0.09966646" "0.10004172" "0.10001381" "0.09999442" "0.1000451"
+## K2O    "0.09967389" "0.10004639" "0.10001272" "0.10003256" "0.1000178"
+## P2O5   "0.09949945" "0.10005849" "0.10001994" "0.10002814" "0.1000317"
 ##        MgO          CaO          Na2O         K2O          P2O5        
-## SiO2   "0.09999527" "0.09999876" "0.09999735" "0.10000056" "0.10000086"
-## TiO2   "0.09997200" "0.10000198" "0.09998972" "0.09999952" "0.10000198"
-## Al2O3  "0.09998626" "0.10001289" "0.09998627" "0.10002800" "0.09999804"
-## Fe2O3T "0.09999431" "0.09999585" "0.09998342" "0.09999778" "0.10000030"
-## MnO    "0.09998264" "0.09998320" "0.09999513" "0.09997053" "0.09997733"
-## MgO    "0.10011263" "0.09999039" "0.10000429" "0.09996256" "0.09999967"
-## CaO    "0.09999040" "0.10002174" "0.09999453" "0.10000190" "0.09999873"
-## Na2O   "0.10000429" "0.09999453" "0.10007487" "0.09998931" "0.09998510"
-## K2O    "0.09996257" "0.10000190" "0.09998931" "0.10004847" "0.10000135"
-## P2O5   "0.09999968" "0.09999873" "0.09998511" "0.10000135" "0.10003660"
+## SiO2   "0.09970915" "0.09958957" "0.09966191" "0.09966934" "0.09949499"
+## TiO2   "0.10001794" "0.10005295" "0.10004171" "0.10004637" "0.10005855"
+## Al2O3  "0.10000864" "0.10000209" "0.10001387" "0.10001277" "0.10002008"
+## Fe2O3T "0.10001883" "0.10002242" "0.09999446" "0.10003259" "0.10002826"
+## MnO    "0.10002772" "0.10003430" "0.10004514" "0.10001776" "0.10003176"
+## MgO    "0.10008386" "0.10003285" "0.10002368" "0.10002052" "0.10005227"
+## CaO    "0.10003280" "0.10009855" "0.10004622" "0.10004775" "0.10006905"
+## Na2O   "0.10002366" "0.10004625" "0.10009211" "0.10002929" "0.10004714"
+## K2O    "0.10002050" "0.10004779" "0.10002930" "0.10005981" "0.10005929"
+## P2O5   "0.10005218" "0.10006900" "0.10004706" "0.10005921" "0.10013487"
 ## attr(,"class")
 ## [1] "acomp"
 \end{verbatim}
@@ -336,16 +480,16 @@ Not much difference for SiO2 \emph{but} TiO2 concentration is twice as high in t
 \end{alltt}
 \begin{verbatim}
 ##        mean.estimate  mean.naive mean.naive.wo.outlier
-## SiO2     0.581220398 0.563604249           0.512617236
-## TiO2     0.010824249 0.015611874           0.029696364
-## Al2O3    0.197571359 0.198331406           0.200360748
-## Fe2O3T   0.048093886 0.048458236           0.048884754
-## MnO      0.001403392 0.012352326           0.045442617
-## MgO      0.011311008 0.011289539           0.011110850
-## CaO      0.037648453 0.038427579           0.040367724
-## Na2O     0.067546763 0.066829195           0.064474391
-## K2O      0.038348247 0.038910243           0.040419032
-## P2O5     0.006032244 0.006185351           0.006626284
+## SiO2     0.572280369 0.562480850           0.509635270
+## TiO2     0.011132233 0.016099834           0.030527015
+## Al2O3    0.201225261 0.197964339           0.200463923
+## Fe2O3T   0.049229936 0.048373292           0.048931757
+## MnO      0.001432903 0.013702982           0.047356073
+## MgO      0.011614807 0.011273968           0.011162882
+## CaO      0.038608273 0.038366921           0.040530951
+## Na2O     0.069131939 0.066717132           0.064349912
+## K2O      0.039169507 0.038844793           0.040388171
+## P2O5     0.006174773 0.006175889           0.006654047
 \end{verbatim}
 \begin{alltt}
 \hlstd{df}\hlopt{$}\hlstd{element} \hlkwb{<-} \hlkwd{row.names}\hlstd{(df)}
@@ -356,16 +500,16 @@ Not much difference for SiO2 \emph{but} TiO2 concentration is twice as high in t
 ## # A tibble: 30 x 3
 ##    element name                   value
 ##    <chr>   <chr>                  <dbl>
-##  1 SiO2    mean.estimate         0.581 
-##  2 SiO2    mean.naive            0.564 
-##  3 SiO2    mean.naive.wo.outlier 0.513 
-##  4 TiO2    mean.estimate         0.0108
-##  5 TiO2    mean.naive            0.0156
-##  6 TiO2    mean.naive.wo.outlier 0.0297
-##  7 Al2O3   mean.estimate         0.198 
+##  1 SiO2    mean.estimate         0.572 
+##  2 SiO2    mean.naive            0.562 
+##  3 SiO2    mean.naive.wo.outlier 0.510 
+##  4 TiO2    mean.estimate         0.0111
+##  5 TiO2    mean.naive            0.0161
+##  6 TiO2    mean.naive.wo.outlier 0.0305
+##  7 Al2O3   mean.estimate         0.201 
 ##  8 Al2O3   mean.naive            0.198 
 ##  9 Al2O3   mean.naive.wo.outlier 0.200 
-## 10 Fe2O3T  mean.estimate         0.0481
+## 10 Fe2O3T  mean.estimate         0.0492
 ## # ... with 20 more rows
 \end{verbatim}
 \begin{alltt}
@@ -373,7 +517,7 @@ Not much difference for SiO2 \emph{but} TiO2 concentration is twice as high in t
 \hlkwd{ggplot}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x}\hlstd{=element,}\hlkwc{y}\hlstd{=value),}\hlkwc{data} \hlstd{= df.plot)}\hlopt{+}\hlkwd{geom_col}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{fill}\hlstd{=name),}\hlkwc{position} \hlstd{=} \hlstr{"dodge"}\hlstd{)}\hlopt{+}\hlkwd{theme_bw}\hlstd{()}\hlopt{+}\hlkwd{facet_grid}\hlstd{(group}\hlopt{~}\hlstd{.,}\hlkwc{scales} \hlstd{=} \hlstr{"free"}\hlstd{)}\hlopt{+}\hlkwd{scale_color_viridis_d}\hlstd{()}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-14-1} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-17-1} 
 \end{knitrout}
 Preliminary conclusion : naive without outlier downplay the concentration of elements present in large quantities and blow the concentration of elements present in small quantities.
 
