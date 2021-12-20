@@ -23,4 +23,30 @@ Biplot : replace iteratively missing values by a value smaller and smaller.
 
 ## Meeting 20 December 10 am to 12 am
 
-^
+### Pr Weltje algorithm
+
+So far, I've looked at a subproblem : major elements.
+Pr Weltje proposes a unifying algorithm where instead of looking at a subcomposition we look at the total composition (summing to one) seen as :
+
+1. Mass fraction of majors elements
+2. Mass fraction of trace elements 
+3. Mass fraction of oxygen
+4. Mass fraction of the rest
+
+In this way, we get feasible compositions from a physical point of view. How to handle missing values ? Pr Weltje proposes to take the log(x/1-x) which is a mapping from the Simplex to the Real Space. Pr Gijbels underlines that doing so creates dependance between the labs since we replace missing values with means.
+
+### Principal Component Analysis 
+
+Both professors were happy with the fact that we need a high number of PC's to explain the variability in the dataset. This suggests that the assumption of a multivariate standard normal distribution for the standardized clr data holds, all we have is random multivariate error.
+
+If we analyze rock bodies, we would expect a few principal component analysis would be able to summarize the rock samples but in the case where we are looking at i.i.d analyses of the same rock we need a high number of PC's.
+
+### Clusters, row-wise & column-wise missing values
+For each rock, count the number of missing values row-wise & column-wise.
+If number of missing values per column is larger than cut-off (let's say 2/3), we say all the column is missing.
+
+One can also count missing values in each rows and if too many missing values in a lab, also throw them out.
+
+## Meeting 14 February 10 am to 12 am 
+
+

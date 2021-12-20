@@ -15,6 +15,7 @@ geomean <- function(x){
 }
 
 setwd("/home/max/Documents/MStatistics/MA2/Thesis/Repository/")
+
 data <- read_csv("data/raw/GeoPT48 -84Ra.csv")
 
 sel <-c("SiO2","TiO2","Al2O3","Fe2O3T","MnO","MgO","CaO","Na2O",
@@ -36,7 +37,10 @@ geomean.v <- sapply(rbind(df.majors),geomean)
 for (i in 1:ncol(df.majors)){
   df[,i][is.na(df.majors[,i])] <- geomean.v[i] 
 }
-# Now there are 2 dataframes. df.na where missing values were removed. df where missing values were imputed
+# Now there are 2 dataframes. 'df.na' where missing values were removed. 
+# And 'df' where missing values were imputed
+dim(df) # 86 observations 
+dim(df.na) # 72 observations when removing observations with even one NA
 # Their centered log ratio transform are respectively :
 clr.df <- clr(df)
 clr.df.na <- clr(df.na)
@@ -58,15 +62,17 @@ threshold <- sqrt(qchisq(p = 0.975, df = ncol(ilr.df)))
 outliers <-  which(sqrt(ilrdf.mcd$mah) >= threshold) # gives the 
 outliers
 round(sqrt(ilrdf.mcd$mah),3)
-outliers <-  which(sqrt(ilrdf.mcd$mah) >= 50)
+# NA case
+outliers.na <-  which(sqrt(ilrdf.mcd.na$mah) >= threshold)
+round(sqrt(ilrdf.mcd.na$mah),3)
 
 # PCA without outliers 
 
 # restricted dataset
 pca.df <- prcomp(clr.df[-outliers,],scale. = T)
-       
-pca.df.na <- prcomp(clr.df.na[-outliers,],scale. = T)
-
+summary(pca.df)  # 2 components explain 53 \% of variance, 6 components explain 91 \% total variance 
+pca.df.na <- prcomp(clr.df.na[-outliers.na,],scale. = T)
+summary(pca.df.na) # 2 components explain 39 \% of variance, 6 components explain 86 \% total variance
 # Biplots 
 # wo outliers :
 autoplot(pca.df,loadings=T,loadings.label=T)+theme_bw()
@@ -83,13 +89,14 @@ df.out <- data.frame(proj.outliers) %>% mutate(outlier="yes")
 
 df.tot <- data.frame(rbind(df.notout,df.out))
 
-ggplot(df.tot,aes(x=PC1,y=PC2,colour=outlier))+geom_point()
+ggplot(df.tot,aes(x=PC1,y=PC2,colour=outlier))+geom_point()+theme_bw()
 # with outliers
 plot <- autoplot(pca.df,loadings=F,loadings.label=F)+theme_bw()
 plot + geom_point(data = df.out,aes(x=PC1,y=PC2),colour="purple")+theme_bw()
 autoplot(pca.df.na,loadings=T,loadings.label=T)+theme_bw()
 
 # We can confidently remove these 13 outlying points out of 97 obs. 
+
 
 # Provide mean and covariance estimate : 
 clr.mean <- colMeans(clr.df[-outliers,])
@@ -102,3 +109,4 @@ mean.estimate
 cov.estimate # matrix of constant
 
 # Repeat for 32 rocks ? 
+
