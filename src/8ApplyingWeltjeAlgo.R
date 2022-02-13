@@ -70,5 +70,5 @@ imputed.df[[29]] <- blr_imputation(list.df[[29]])[[1]]
 # Export the 29 dataframes to csv
 names(imputed.df) <- names(list.df)
 for(i in 1:length(imputed.df) ){
-  write.csv(imputed.df[[i]],file = paste("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/",names(imputed.df[i])),sep = "")
+  write.csv(imputed.df[[i]],file = paste("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/",names(imputed.df[i])))
 }

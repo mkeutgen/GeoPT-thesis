@@ -5,7 +5,7 @@ library("readr")
 library("compositions")
 
 # Debugging 
-dataframe <- list.df[[11]]
+
 blr_imputation.mod <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,cutoff.col=0.95){
   ## BLR IMPUTATION FUNCTION ##
   # Blr Imputation Function replace iteratively missing values with the blr mean
@@ -51,9 +51,8 @@ blr_imputation.mod <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,cutof
   })
 
   # Unit Conformity 
-  dataframe[traces] <- as.numeric(unlist(dataframe[traces])) *10E-4
-
-
+  dataframe[traces] <- dataframe[traces] *10E-4
+  # Sum to one
   dataframe <- 1/100*dataframe %>% select(ox.majors,traces)
   
   
@@ -172,9 +171,3 @@ blr_imputation.mod <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,cutof
   names(result) <- c("Imputed Dataframe","Feasibility Matrix full df","Estimated Values")
   return(result)
 }
-
-# dataset <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/GeoPT48 -84Ra.csv")
-# View(dataset)
-# dataset_full <- blr_imputation(dataset)
-# dataset_full
-# View(dataset_full)
