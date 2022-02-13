@@ -133,6 +133,3 @@ names(list.wf) <- names(list.lf)
 for(i in 1:length(list.wf) ){
   write.csv(list.wf[[i]],file = paste("/home/max/Documents/MStatistics/Thesis/Repository/data/raw/",names(list.wf[i]),'.csv',sep=""))
 }
-
-
-1/4 * log2(1/4) + 3/4 * log2(3/4)

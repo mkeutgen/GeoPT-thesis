@@ -1,36 +1,39 @@
-
-###########################################
-## GJ Weltje Algorithm
-## Iterative Estimation of Mean Composition
-## GeoPT Thesis
-###########################################
-
-
-## A. Initial Vectors
-
 library("tidyverse")
 library("readr")
 library("compositions")
-# Vector of major elements
 
+blr_imputation <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,cutoff.col=0.95){
+## BLR IMPUTATION FUNCTION ##
+# Blr Imputation Function replace iteratively missing values with the blr mean
+# Input : Dataframe, rock's composition.
+# 3 hyperparameters : "cutoff.major", laboratories with more than 1/2 (default) missing values in
+# the major elements are omitted. "cutoff.trace", laboratories with less than 3/4 (defaut) missing values
+# are omitted. 
+# "cutoff.col" analytes (chemical elements) with more than 95 % (default) missing values are omitted.   
+
+## PART ONE : Removing NA's 
+
+# Vector of major elements
 majors <- c("Si", "Ti", "Al", "Fe3", "Fe2", "Mn", "Mg", 
             "Ca", "Na", "K", "P")
 
 # Vector of trace elements
-
-traces <- c("Ag", "As", "Au", "B", "Ba", "Be", "Bi", "Br", "C(org)", "C(tot)", 
+traces.full <- c("Ag", "As", "Au", "B", "Ba", "Be", "Bi", "Br", 
             "Cd", "Ce", "Cl", "Co", "Cr", "Cs", "Cu", "Dy", "Er", "Eu", "F", 
-            "Ga", "Gd", "Ge", "Hf", "Hg", "Ho", "I", "In", "Ir", "La", "Li", 
-            "Lu", "Mo", "N", "Nb", "Nd", "Ni", "Os", "Pb", "Pd", "Pr", "Pt", 
+            "Ga", "Gd", "Ge", "Hf", "Hg", "Ho","In", "Ir", "La", "Li", 
+            "Lu", "Mo", "Nb", "Nd", "Ni", "Os", "Pb", "Pd", "Pr", "Pt", 
             "Rb", "Re", "Rh", "Ru", "S", "Sb", "Sc", "Se", "Sm", "Sn", "Sr", 
             "Ta", "Tb", "Te", "Th", "Tl", "Tm", "U", "V", "W", "Y", "Yb", 
             "Zn", "Zr")
 
 
-# Vector of major oxides
 
+
+
+# Vector of major oxides
 ox.majors <- c("SiO2", "TiO2", "Al2O3", "Fe2O3T", "Fe(II)O", "MnO", "MgO", 
                "CaO", "Na2O", "K2O", "P2O5")
+
 
 # Fraction of element in the major oxides
 frac_el <- 1/100*c(46.75, 47.87, 52.93, 69.94, 77.74, 77.44, 60.31, 71.47, 74.18, 83.01, 43.64)
@@ -38,16 +41,27 @@ frac_el <- 1/100*c(46.75, 47.87, 52.93, 69.94, 77.74, 77.44, 60.31, 71.47, 74.18
 # Fraction of oxygen in the major oxides  
 frac_ox <- rep(1,times=length(frac_el))-frac_el
 
-# B. Let a dataset "data.raw", n x p matrix with n analysis and p analytes. 
-data.raw <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/GeoPT48 -84Ra.csv")
+# Some dataframes have * instead of NA
+dataframe[dataframe=="*"]=NA
+
+
+# Some dataframes don't have numeric columns yet 
+dataframe[c(traces,ox.majors)] <- lapply(dataframe[c(traces,ox.majors)], function(x) {
+  if(is.character(x)) as.numeric(as.character(x)) else x
+})
+
+
+# Unit Conformity 
+dataframe[traces] <- dataframe[traces] *10E-4
+# Sum to one
+dataframe <- 1/100*dataframe %>% select(ox.majors,traces)
+
+
 
 # Elementary cleaning, removing columns with no values in the major elements
 
-df.majors <- select(data.raw,all_of(ox.majors))
-df.traces <- select(data.raw,all_of(traces))
-
-cutoff.major <- 1/2
-cutoff.trace <- 3/4
+df.majors <- select(dataframe,all_of(ox.majors))
+df.traces <- select(dataframe,all_of(traces))
 
 # Cut off rows with more than 50 % of major analytes are dropped this step is 
 # important to avoid infinity values in the logit space
@@ -56,23 +70,23 @@ m <- which(rowSums(is.na(df.majors)) < cutoff.major*ncol(df.majors))
 # Cut off rows with more than 75 % trace elements are dropped
 n <- which(rowSums(is.na(df.traces)) < cutoff.trace *ncol(df.traces))
 
-index <- intersect(m,n)
-
-data <- data.raw[index,]
-
+rowindex <- intersect(m,n)
+colindex <- which(colSums(is.na(dataframe)) < cutoff.col*nrow(dataframe))
 
 
-# Unit Conformity 
-data[traces] <- data[traces] *10E-4
+
+dataframe <- dataframe[rowindex,colindex]
 
 
-# Feasible Function 
+
+# Part 2 : Compute feasibility matrix
+## Feasible Function 
 feasible <- function(data.frame){
   # Feasibility matrix
   
   f.mat <- data.frame %>% summarize(X = rowSums(data.frame %>% select(ox.majors)*frac_el,na.rm = T),
-                              OX = rowSums(data.frame %>% select(ox.majors)*frac_ox,na.rm = T),
-                              Tr = rowSums(data.frame %>% select(traces),na.rm = T))
+                                    OX = rowSums(data.frame %>% select(ox.majors)*frac_ox,na.rm = T),
+                                    Tr = rowSums(data.frame %>% select(intersect(names(colindex),traces)),na.rm = T))
   # Scaling this matrix to unit sum
   f.mat <- as_tibble(clo(f.mat))
   f.mat <- f.mat %>% mutate(R = 1-X-OX-Tr,
@@ -94,18 +108,15 @@ feasible <- function(data.frame){
   # R is :
   Inv.R <- 100-(Inv.X + Inv.Tr + Inv.Ox)
   result <- list(Inv.X,Inv.Tr,Inv.R,f.mat.final)
-  names(result) <- c("Estimate X","Variance X","Estimate Tr","Estimate R","Feasibility Matrix")
+  names(result) <- c("Estimate X","Estimate Tr","Estimate R","Feasibility Matrix")
   return(result)
-
+  
 }
-
 # Next we impute missing values by their means after logit transform. 
 # Convergence criterion : Euclidean distance of successive estimates X' and T'
 
 
 # Replace iteratively NAs values row-wise
-
-df <- 1/100*data %>% select(ox.majors,traces)
 
 #for i in 1:ncol(df)
 
@@ -117,9 +128,10 @@ blr.mean <- function(x){
   result <- (exp(m))/( 1 + exp(m))
   return(result)
 }
+df <- dataframe
 
-#blr.mean.l <- as.list(sapply(df,blr.mean))
-#names(blr.mean.l) <- names(df)
+blr.mean.l <- as.list(sapply(df,blr.mean))
+names(blr.mean.l) <- names(df)
 
 # imputing NA with the mean calculated 
 # Replace Na's by mean of the logit transformed observed values column after column :
@@ -131,7 +143,6 @@ list.row <- list()
 length(list.row) <- nrow(df)
 blr.mean.list <- list()
 length(blr.mean.list) <- nrow(df)
-
 
 
 # Initialize it 
@@ -146,20 +157,24 @@ for (i in 2:(nrow(df))) {
 
 # Does replacing the i-th rows affect the feasibility matrix ?
 
-sapply(list.df,feasible)
-
+feas.mat <- sapply(list.df,feasible)
+feas.mat.full <- feas.mat[,nrow(df)][[4]]
 # Preliminary conclusions :
 # X at 1st iteration 0.6134728
 # X at 30th iteration 0.611168
 # X at 58th iteration 
 # 
 
-full.df <- list.df[[59]]
+full.df <- list.df[[nrow(df)]]
 full.df <- full.df[1:nrow(df),]
 
-# Applying to another df
+result <- list(full.df,feas.mat.full,feas.mat)
+names(result) <- c("Imputed Dataframe","Feasibility Matrix full df","Estimated Values")
+return(result)
+}
 
-blr.df <- data.frame(matrix(unlist(blr.mean.list),ncol=ncol(df),byrow = T))
-names(blr.df) <- names(df)
-
-sapply(list.df,feasible)[,57]
+#dataset <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/GeoPT48 -84Ra.csv")
+# View(dataset)
+#dataset_full <- blr_imputation(dataset)
+# dataset_full
+# View(dataset_full)
