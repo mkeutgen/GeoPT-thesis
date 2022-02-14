@@ -48,5 +48,38 @@ If number of missing values per column is larger than cut-off (let's say 2/3), w
 One can also count missing values in each rows and if too many missing values in a lab, also throw them out.
 
 ## Meeting 14 February 10 am to 12 am 
+### Comments regarding my work so far
+The most important remark is that there is an issue in the algorithm. What I thought to be multiple interactions is only one iteration according to Pr Weltje.
+What I should do is : 
+1. Impute the missing values for the whole dataframe by the blr mean of each column.
+2. If sum is larger than one, scale back to 1.
+3. Delete the imputed values and replace them by the new blr means of the scaled dataframe.
+4. If sum is larger than one, scale back to 1.
+5. Delete the imputed values and replace them by the new blr means of the scaled dataframe.
+6. Repeat until convergence.
+
+To highlight in the thesis : BLR are sesnsitive to the size. They're equal to the alr transformation in the psecific case that they sum to one.
+BLR are a way to exploit the scale of each observations in the dataset by using the constraint X + OX + Tr + R = 1. First everybody tried to get rid of the
+
+Pr Gijbels : the normal distribution assumption is still an assumption. We should check if this assumption is reasonable through diagnostic plots, 2D histograms, etc...
+
+Pr Gijbels : is PCA in the imputed dataframe similar to PCA in the NAs full dataframe ? 
+
+We actually expect to have less outliers in the imputed df than in the original df.   
+
+Overall, both professors were satisfied with what I did so far, Pr Weltje said I was on the right track. 
+## Practicalities
+Intermediate Presentation will be in the week of 21st of March.
+What I'm doing ? 
+What I did ?
+Where I'm going ?
+
+Illustration example
+Algorithm
+Show results.
+
+Next meeting : I can also meet individually with Pr. Gijbels or Weltje to discuss specifics. (algorithm with Weltje for example).
+
+## Meeting 2nd of March 10 a.m
 
 
