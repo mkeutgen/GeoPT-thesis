@@ -166,6 +166,9 @@ blr_imputation.mod <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,cutof
   
   full.df <- list.df[[nrow(df)]]
   full.df <- full.df[1:nrow(df),]
+  full.df <- clo(full.df)
+  full.df <- as_tibble(clo(full.df))
+  
   
   result <- list(full.df,feas.mat.full,feas.mat)
   names(result) <- c("Imputed Dataframe","Feasibility Matrix full df","Estimated Values")

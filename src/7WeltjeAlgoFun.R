@@ -2,6 +2,9 @@ library("tidyverse")
 library("readr")
 library("compositions")
 
+dataframe <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/GeoPT48 -84Ra.csv")
+
+
 blr_imputation <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,cutoff.col=0.95){
 ## BLR IMPUTATION FUNCTION ##
 # Blr Imputation Function replace iteratively missing values with the blr mean
@@ -18,7 +21,7 @@ majors <- c("Si", "Ti", "Al", "Fe3", "Fe2", "Mn", "Mg",
             "Ca", "Na", "K", "P")
 
 # Vector of trace elements
-traces.full <- c("Ag", "As", "Au", "B", "Ba", "Be", "Bi", "Br", 
+traces <- c("Ag", "As", "Au", "B", "Ba", "Be", "Bi", "Br", 
             "Cd", "Ce", "Cl", "Co", "Cr", "Cs", "Cu", "Dy", "Er", "Eu", "F", 
             "Ga", "Gd", "Ge", "Hf", "Hg", "Ho","In", "Ir", "La", "Li", 
             "Lu", "Mo", "Nb", "Nd", "Ni", "Os", "Pb", "Pd", "Pr", "Pt", 
@@ -167,14 +170,14 @@ feas.mat.full <- feas.mat[,nrow(df)][[4]]
 
 full.df <- list.df[[nrow(df)]]
 full.df <- full.df[1:nrow(df),]
+full.df <- as_tibble(clo(full.df))
 
 result <- list(full.df,feas.mat.full,feas.mat)
 names(result) <- c("Imputed Dataframe","Feasibility Matrix full df","Estimated Values")
 return(result)
 }
 
-#dataset <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/GeoPT48 -84Ra.csv")
-# View(dataset)
-#dataset_full <- blr_imputation(dataset)
-# dataset_full
-# View(dataset_full)
+# TEST THE FUNCTION
+dataset <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/GeoPT48 -84Ra.csv")
+dataset_full <- blr_imputation(dataset)
+head(dataset_full)
