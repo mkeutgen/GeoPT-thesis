@@ -1,14 +1,10 @@
 library("tidyverse")
 library("readr")
 library("compositions")
-# Loading the dataset to test the function
-
-setwd("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/")
-dataframe <- read_csv("GeoPT48 -84Ra.csv")
 
 # Logit and BLR Mean Function
 logit <- function(x){log((x)/(1-x))}
-
+# BLR Mean function
 blr.mean <- function(x){
   logit.t <- sapply(x,logit)
   m <- mean(logit.t,na.rm=T)
@@ -55,7 +51,7 @@ df_cleaning <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,cutoff.col=.
   
   
   # Unit Conformity 
-  dataframe[traces] <- dataframe[traces] *10E-4
+  dataframe[traces] <- dataframe[traces] *1e-04
   # Sum to one
   dataframe <- 1/100*dataframe %>% select(ox.majors,traces)
   
@@ -88,55 +84,21 @@ df_cleaning <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,cutoff.col=.
 }
 
 
-# Apply data cleaning function on dataframe
-dataframe <- df_cleaning(dataframe)
-View(dataframe %>% select(!ox.majors))
-# Now that we cleaned the data and deleted absurd laboratories and columns, we move on to compute the feasibility for each row.
+# Feasibility function
 feasibility <- function(dataframe){
 f.mat <- dataframe %>% summarize(X = rowSums(dataframe %>% select(ox.majors)*frac_el,na.rm = T),
                                   OX = rowSums(dataframe %>% select(ox.majors)*frac_ox,na.rm = T),
                                   Tr = rowSums(dataframe %>% select(!ox.majors),na.rm = T))
 return(f.mat)
 }
-
-rowSums(feasibility(dataframe))
-ifelse(rowSums(f.mat)[1]>1,dataframe[1])
-
-# ITERATION ONE :
-# If row-wise sum of the feasibility matrix is above one, scale the row, else do nothing
-
-
-# scale every rows whose sum is above 1
-feasibility.matrix <- feasibility(dataframe)  
-for (i in 1:nrow(dataframe)){
-  # if statement check if composition is feasible, if not feasible, scale it
-  dataframe[i,] <- if (rowSums(feasibility.matrix)[i]>1){
-    sweep(dataframe[i,],2,rowSums(dataframe,na.rm=T)[i],"/")
-  } # else no need to scale it 
-  else {
-    dataframe[i,]
-  }
-}
-return(dataframe)
-}
-# Scale observations: 
-dataframe <- scalingfunction(dataframe = dataframe)  
-# Impute missing values
-dataframe.imp <- 
-rowSums(dataframe,na.rm=T)
-# Then scale the original dataframe :
-dataframe/rowSums(dataframe.prime,na.rm=T)[i]
-# Then compute the missing values 
-
+# Impute NA function
 impute_na <- function(dataframe){
   blr.mean.l <- as.list(sapply(dataframe,blr.mean))
   names(blr.mean.l) <- names(dataframe)
   replace_na(dataframe,blr.mean.l)
 }
-# Impute NA :
-imputed.df <- impute_na(dataframe)
-# We need to modify the scaling function, it should scale the dataframe WITHOUT imputed values on the basis of the dataframe
-# with imputed values 
+
+# Scaling function 
 scalingfunction <- function(dataframe,imputed.dataframe){
   # scale every rows whose sum is above 1
   feasibility.matrix <- feasibility(imputed.dataframe)  
@@ -152,45 +114,27 @@ scalingfunction <- function(dataframe,imputed.dataframe){
   }
   return(dataframe)
 }
-# Scale the df
-scalingfunction(dataframe)
-# The algorithm :
 
-
-# 2. Scale it
-dataframe <- read_csv("GeoPT48 -84Ra.csv")
-# 1. Cleaning step
-dataframe <- df_cleaning(dataframe)
-# Create a list of n dataframe :
-df.iteration1 <- scalingfunction(dataframe,impute_na(dataframe))
-df.iteration2 <- scalingfunction(df.iteration1,impute_na(df.iteration1))
-df.iteration3 <- scalingfunction(df.iteration2,impute_na(df.iteration2))
-
-mean(rowSums(df.iteration2,na.rm=T)) 
-mean(rowSums(df.iteration1,na.rm=T)) 
-
-
-rowSums(scalingfunction(impute_na(dataframe)))
-# Set n to 10
-n <- 10
-# Fill this list
-for (i in 1:n){
-  list.df[[i]] <- dataframe
-}
+# Iterative mean function
+iterative.mean <- function(dataframe,epsilon=1E-8){
 list.df <- list()
 list.df[[1]] <- dataframe
-list.df[[2]] <- scalingfunction(list.df[[1]],impute_na(list.df[[1]]))
+list.df[[2]] <- scalingfunction(dataframe,impute_na(dataframe))
 i <- 2
-# Do while the difference in mean is above a threshold
 
-while (mean(rowSums(list.df[[i-1]],na.rm=T))-mean(rowSums(list.df[[i]],na.rm=T)) > 10E-8){
+epsilon <- 10E-8
+# Do while the difference in mean is above a "physical" threshold, argue why this is better than conventional MSE.
+while (abs(mean(rowSums(list.df[[i-1]],na.rm=T))-mean(rowSums(list.df[[i]],na.rm=T))) > epsilon){
   list.df[[i+1]] <- scalingfunction(list.df[[i]],impute_na(list.df[[i]]))
   i <- i + 1
-
 }
-list.df
-list.df[[10]] == list.df[[9]]
+ADM <- abs(mean(rowSums(list.df[[length(list.df)]],na.rm=T))-mean(rowSums(list.df[[length(list.df)-1]],na.rm=T)))
+output <- scalingfunction(impute_na(iterative.mean(dataframe)[[1]]),impute_na(iterative.mean(dataframe)[[1]]))
+final.output <- output %>% mutate(Rest=1-rowSums(output)) 
 
-# Convergence, debug the while loop.
+result <- list(final.output,paste(i,"iterations needeed until convergence"),paste("At final iteration, ADM is",ADM))
+names(result) <- c("Output","Iterations","ADM")
+return(result)
+}
 
 
