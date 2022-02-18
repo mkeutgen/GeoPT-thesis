@@ -1,6 +1,7 @@
 library("tidyverse")
 library("readr")
 library("compositions")
+dataframe <- list.df[[1]]
 
 # Logit and BLR Mean Function
 logit <- function(x){log((x)/(1-x))}
@@ -12,22 +13,41 @@ blr.mean <- function(x){
   return(result)
 }
 
-
-
 # Cleaning function
-df_cleaning <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,cutoff.col=.95){
+df_cleaning <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,cutoff.col=.95,carbon=FALSE,platinoids=TRUE){
   # Vector of major elements
   majors <- c("Si", "Ti", "Al", "Fe3", "Fe2", "Mn", "Mg", 
               "Ca", "Na", "K", "P")
   
   # Vector of trace elements
-  traces <- c("Ag", "As", "Au", "B", "Ba", "Be", "Bi", "Br", "C(org)", "C(tot)", 
+  traces.carbon <- c("Ag", "As", "Au", "B", "Ba", "Be", "Bi", "Br", "C(org)", "C(tot)", 
               "Cd", "Ce", "Cl", "Co", "Cr", "Cs", "Cu", "Dy", "Er", "Eu", "F", 
               "Ga", "Gd", "Ge", "Hf", "Hg", "Ho", "I", "In", "Ir", "La", "Li", 
               "Lu", "Mo", "N", "Nb", "Nd", "Ni", "Os", "Pb", "Pd", "Pr", "Pt", 
               "Rb", "Re", "Rh", "Ru", "S", "Sb", "Sc", "Se", "Sm", "Sn", "Sr", 
               "Ta", "Tb", "Te", "Th", "Tl", "Tm", "U", "V", "W", "Y", "Yb", 
               "Zn", "Zr")
+  traces.wocarbon <- c("Ag", "As", "Au", "B", "Ba", "Be", "Bi", "Br", 
+              "Cd", "Ce", "Cl", "Co", "Cr", "Cs", "Cu", "Dy", "Er", "Eu", "F", 
+              "Ga", "Gd", "Ge", "Hf", "Hg", "Ho", "I", "In", "Ir", "La", "Li", 
+              "Lu", "Mo", "N", "Nb", "Nd", "Ni", "Os", "Pb", "Pd", "Pr", "Pt", 
+              "Rb", "Re", "Rh", "Ru", "S", "Sb", "Sc", "Se", "Sm", "Sn", "Sr", 
+              "Ta", "Tb", "Te", "Th", "Tl", "Tm", "U", "V", "W", "Y", "Yb", 
+              "Zn", "Zr")
+ 
+
+traces <-    if(carbon==T){
+     traces.carbon
+      }  else {traces.wocarbon} 
+  
+ traces <- if (platinoids == F){
+     c("Ag", "As","B", "Ba", "Be", "Bi", "Br", 
+                         "Cd", "Ce", "Cl", "Co", "Cr", "Cs", "Cu", "Dy", "Er", "Eu", "F", 
+                         "Ga", "Gd", "Ge", "Hf", "Hg", "Ho", "La", "Li", 
+                         "Lu", "Mo", "Nb", "Nd", "Ni", "Pb", "Pr", 
+                         "Rb", "S", "Sb", "Sc", "Se", "Sm", "Sn", "Sr", 
+                         "Ta", "Tb", "Th", "Tl", "Tm", "U", "V", "W", "Y", "Yb", 
+                         "Zn", "Zr")} else {traces.wocarbon}
   
   # Vector of major oxides
   ox.majors <- c("SiO2", "TiO2", "Al2O3", "Fe2O3T", "Fe(II)O", "MnO", "MgO", 
@@ -83,7 +103,6 @@ df_cleaning <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,cutoff.col=.
   return(dataframe)
 }
 
-
 # Feasibility function
 feasibility <- function(dataframe){
 f.mat <- dataframe %>% summarize(X = rowSums(dataframe %>% select(ox.majors)*frac_el,na.rm = T),
@@ -129,7 +148,11 @@ while (abs(mean(rowSums(list.df[[i-1]],na.rm=T))-mean(rowSums(list.df[[i]],na.rm
   i <- i + 1
 }
 ADM <- abs(mean(rowSums(list.df[[length(list.df)]],na.rm=T))-mean(rowSums(list.df[[length(list.df)-1]],na.rm=T)))
-output <- scalingfunction(impute_na(iterative.mean(dataframe)[[1]]),impute_na(iterative.mean(dataframe)[[1]]))
+# Impute NA of the dataframe with converged values :
+dataframe <- impute_na(list.df[[length(list.df)]])
+# Final Output
+output <- scalingfunction(dataframe,dataframe)
+# Rest column 
 final.output <- output %>% mutate(Rest=1-rowSums(output)) 
 
 result <- list(final.output,paste(i,"iterations needeed until convergence"),paste("At final iteration, ADM is",ADM))
@@ -137,4 +160,25 @@ names(result) <- c("Output","Iterations","ADM")
 return(result)
 }
 
+# Test Algorithm.
+# 1 Load the data
 
+GWAlgo.mod(list.df[[10]])
+GWAlgo.mod(dataframe,platinoids=FALSE)
+dataframe <- df_cleaning(dataframe,platinoids=FALSE)
+result <- iterative.mean(dataframe) 
+
+GWAlgo <- function(dataframe,carbon=FALSE,platinoids=TRUE){
+# 2 Clean the data
+dataframe <- df_cleaning(dataframe,platinoids=TRUE)
+# 3 Call the iterative mean function
+result <- iterative.mean(dataframe)[[1]] 
+return(result)
+}
+GWAlgo.mod <- function(dataframe,carbon=FALSE,platinoids=FALSE){
+  # 2 Clean the data
+  dataframe <- df_cleaning(dataframe,platinoids=FALSE)
+  # 3 Call the iterative mean function
+  result <- iterative.mean(dataframe)[[1]]
+  return(result)
+}

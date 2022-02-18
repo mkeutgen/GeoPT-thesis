@@ -2,7 +2,7 @@
 # Last time, 3 topics were discussed :
 # Missing Values Algorithm => implemented in the blr function.
 # PCA => now can be started
-# Computing Missing Values row-wise and column-wise => implemented in the function. 
+# Computing Missing Values row-wise and column-wise => implemented in the blr function. 
 library(readr)
 library(tidyverse)
 library(compositions)
@@ -23,7 +23,13 @@ rowSums(df.raw[-1],na.rm = T)
 
 # PCA on clr transformed dataframe without missing values. To be continued. 
 
+
+
 summary(prcomp(as_tibble(clr(df)),scale. = T))
+
+# Outlier detection, scale the data, assumption that the clr-transformed data follows a std normal
+View(scale(clr(df),center = T,scale = T))
+
 #########################################################################################
 # Structuring the thesis
 # Introduction
