@@ -13,7 +13,6 @@ for (i in 1:length(filePaths)){
   list.df[[i]] <- read_csv(filePaths[i])}
 
 names(list.df) <- names.df
-View(list.df[[1]])
 # Column Repair
 list.df[[3]]<- list.df[[3]] %>% rename(Fe2O3T = Fe2O3)
 list.df[[4]]<- list.df[[4]] %>% rename(Fe2O3T = Fe2O3)
@@ -61,10 +60,32 @@ imputed.df[[27]]<- GWAlgo.mod(list.df[[27]])
 imputed.df[[28]]<- GWAlgo(list.df[[28]])
 imputed.df[[29]]<- GWAlgo(list.df[[29]])
 
+names(imputed.df)
+
 # Export the 29 dataframes to csv
 names(imputed.df) <- names(list.df)
+names(imputed.df) <- substr(names(imputed.df),1,8)
+imputed.df["GeoPT1"] <-  imputed.df["GeoPT1 -"] 
+imputed.df["GeoPT2"] <-  imputed.df["GeoPT2 -"] 
+imputed.df["GeoPT3"] <-  imputed.df["GeoPT3 -"] 
+imputed.df["GeoPT4"] <-  imputed.df["GeoPT4 -"] 
+imputed.df["GeoPT5"] <-  imputed.df["GeoPT5 -"] 
+imputed.df["GeoPT6"] <-  imputed.df["GeoPT6 -"] 
+imputed.df["GeoPT8"] <-  imputed.df["GeoPT8 -"] 
+
+imputed.df["GeoPT1 -"] <- NULL
+imputed.df["GeoPT2 -"] <- NULL
+imputed.df["GeoPT3 -"] <- NULL
+imputed.df["GeoPT4 -"] <- NULL
+imputed.df["GeoPT5 -"] <- NULL
+imputed.df["GeoPT6 -"] <- NULL
+imputed.df["GeoPT8 -"] <- NULL
+
+
 for(i in 1:length(imputed.df) ){
-  write.csv(imputed.df[[i]],file = paste("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/",names(imputed.df[i])))
+  write.csv(imputed.df[[i]],file = paste0("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/",names(imputed.df[i]),".csv"),row.names = FALSE)
 }
 
+
 setwd("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/")
+
