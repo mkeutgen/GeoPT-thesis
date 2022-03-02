@@ -81,5 +81,23 @@ Show results.
 Next meeting : I can also meet individually with Pr. Gijbels or Weltje to discuss specifics. (algorithm with Weltje for example).
 
 ## Meeting 2nd of March 10 a.m
+# Still to do :
+The outlier detection function which I implemented has a major drawback, it is univariate. Pr Weltje suggests instead to do a principal component analysis on multivariate normal data and compare it with PCA on my datasets. Under the null hypothesis that the generating process at the origin of my data is multivariate normal, one would need a very high number of dimensions. If correlated datasets, a lesser number of Principal Components and hence of dimensions would be sufficient to reconstruct the data matrix. How does the reconstruction error increases with the size of the dataset ? 
+
+IF I am able to answer to this question, I shall be able to reconstruct the data matrix and see which are the observations which are contributing the most to this reconstruction error. Reconstruction error is the sum of squared distances between actual data matrix and its projection in the R space where R is the number of meaningful dimensions which was found by PCA. => Goal of estimating the actual rank of the data matrices.
+
+IF analytical methods are unbiased, the assumption of multivariate normal distribution would be satisfied. Apparently analysis is biased and therefore we must have some kind of methods for outlier detection to remove dubious results from some laboratories.
+
+Then, once outlier detection is done based on this PCA-based approach, we move to the next step and we summarize each rock to its mean and its variance covariance matrix. We further summarize them in a few dimensions only, the dimensions which were considered as meaningful through the PCA. 
+
+! These dimensions should be the same throughout different rocks !
+
+
+We then test the null hypothesis that covariance-variance matrices are the same, that would mean the biases have been the same, there is some systematic error going on rounds and rounds.
+
+In the end, we generate random variables in the euclidean space which are normally distributed and then we transform them through ilr.inv for example and see what it would mean for the chemist.
+
+
+
 
 
