@@ -5,6 +5,7 @@ library(tidyverse)
 library(compositions)
 
 data <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/GeoPT46 .csv")
+View(data)
 RMSEfunction <- function(data){
   # Takes as input a processed dataframe without missing values. Transform it using the ilr transform from the simplex 
   # to the Euclidean D-1 real space.
@@ -61,24 +62,116 @@ for (i in 1:length(list.rmseplot)){
 # RMSE is much higher for projection of 1-2 PC for all rocks older than GeoPT22. Valuable information.
 
 # Flagging outliers in the sub PC space which explains more than 75 % of the variability of the data
-# GeoPT 1 
+# Number of PC under assumption of multivariate normality.
+ncomponent <- function(dataset,cutoff=.95){
+  dataset  <- dataset %>% ilr() %>% as_tibble()
+  xbar <- colMeans(dataset)
+  sigmahat <- var(dataset)
+  sim.dataset <- list()
+  pca.simdataset <- list()
+  ncompo <- c()
+  for (i in 1:100){
+  sim.dataset[[i]] <- mvrnorm(nrow(dataset),mu = xbar,Sigma = sigmahat) %>% as_tibble()
+  pca.simdataset[[i]] <- prcomp(sim.dataset[[i]])
+  ncompo[i] <- which(cumsum(pca.simdataset[[i]]$sdev^2)/sum(pca.simdataset[[i]]$sdev^2)>=cutoff)  %>% min()
+  }
+  # Return the number of components which should be kept
+  ncompo <- ceiling(mean(ncompo))
+  return(ncompo)
+}
 
-RMSEfunction(list.df[[1]])
 
-X <- list.df[[10]] %>% select(-Rest) %>% clo() %>% ilr() %>% as_tibble()
-# Store the means of each columns.
+list.df[[30]] <- NULL
+list.df
+# Number of meaningful components under the null
+ncomponents <- lapply(list.df,ncomponent)
+histograms.l <- list()
+for (i in 1:length(list.df)){
+histograms.l[[i]] <- RMSEfunction(list.df[[i]])[[1]][[ncomponents[[i]]]] %>% 
+  as_tibble() %>% ggplot(aes(x=value))+geom_histogram(bins = 100)+theme_bw()
+}
+
+filenamesplot <- paste(substr(names(list.df),1,stop = 7),".jpeg")
+for (i in 1:length(list.rmseplot)){
+  ggsave(filename = paste("histplot/",filenamesplot[i]),histograms.l[[i]])  
+}
+
+histograms.l[[5]] %>% as_tibble() %>% ggplot(aes(x=value))+geom_histogram(bins = 100)+theme_bw()
+names(histograms.l) <- names(list.df)
+names(ncomponents) <- names(list.df)
+
+pca.simdataset <- prcomp(sim.dataset[[1]])
+"%>% as_tibble  %>% ggplot() + geom_histogram(bins = 100)"
+RMSEfunction(list.df[[i]])[[1]][[ncomponents[[i]]]]
+
+
+pca.simdataset
+# Number of principal components under normality assumption
+which(cumsum(pca.simdataset$sdev^2)/sum(pca.simdataset$sdev^2)>=.95)  %>% min()
+
+summary(prcomp(dataset))
+
+
+xbar <- rnorm(66)
+summary(prcomp(mvrnorm(60,mu = xbar,Sigma = varcov)))
+
+
+# Testing Multivariate Normality Assumption on the reduced dataset :
+  # Without outliers 
+  # On only the n meaningful number of PCs
+# For dataframe 
+ID <- "GeoPT48 .csv"
+list.df[[ID]]
+histograms.l[[ID]]
+out <- RMSEfunction(list.df[[ID]])[[1]][[ncomponents[[ID]]]]
+
+# Cutoff above the 0.3 mark. 
+out.obs <- which(out>=0.3)
+
+RMSEfunction(list.df[[ID]])
+# Output without outliers
+list.df[[ID]][-out.obs,]
+# Outliers are : 9 30 33 49 55
+# PCA without these 5 outliers who contribute the most to the reconstruction error
+# Perform the PCA on the contaminated dataset such that the PCs will be influenced by these outliers and then test for normality
+
+X <- list.df[[ID]] %>% ilr() %>% as_tibble()
 mu = colMeans(X)
-# Perform a PCA
-Xpca <- prcomp(X)
-index <- min(which(cumsum(Xpca$sdev^2)/sum(Xpca$sdev^2) >= share.variance))
+PCA <- prcomp(X,scale. = T)
 
-# Reconstruction error, mean squared error 
-mse<-function(x_hat,x) rowMeans((x_hat-x)^2)
+Xhat = PCA$x[,1:ncomponents[[ID]]] %*% t(PCA$rotation[,1:ncomponents[[ID]]])
 
-# How reconstruction error decreases with the number of components retained ? 
-Components <- index
-Xhat = Xpca$x[,1:Components] %*% t(Xpca$rotation[,1:Components])
 Xhat = scale(Xhat, center = -mu, scale = FALSE)
-mse.vector <- mse(Xhat,X) %>% as_tibble()
 
-ggplot(mse.vector,aes(x=value))+geom_histogram(bins = 100)+theme_bw()
+X %>% head()
+
+Xhat <- Xhat %>% as_tibble() 
+
+Xhat %>% ggplot() + geom_histogram(aes(x=V30))
+
+apply(Xhat,2,shapiro.pvalue)
+
+apply(Xhat[-out.obs,],2,shapiro.pvalue)
+MVN::mvn(Xhat[-out.obs,])
+
+summary(prcomp(Xhat[-out.obs,]))
+
+df <- PCA$x[,1:ncomponents[[ID]]] %>% as_tibble()
+df <- df[-out.obs,]
+apply(df,2,shapiro.pvalue)
+
+# Perform the PCA on the uncontaminated dataset
+PCA <- prcomp(list.df[[ID]][-out.obs,],scale. = T)
+
+
+
+
+df <- PCA$x[,1:ncomponents[[ID]]] %>% as_tibble()
+df %>% ggplot() + geom_histogram(aes(x=PC9))
+
+apply(df,2,shapiro.pvalue)
+
+# Outlier detection seems pretty inefficient with the PCA-method. May be because we are in this case looking at orthogonal outliers which influence
+# on normality of the marginals is limited when compared to score outliers
+
+

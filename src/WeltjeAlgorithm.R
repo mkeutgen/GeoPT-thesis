@@ -164,17 +164,19 @@ scalingfunction <- function(dataframe,imputed.dataframe){
 # Iterative mean function
 iterative.mean <- function(dataframe,epsilon=1E-8){
 list.df <- list()
+ADS.list <- list()
+
 list.df[[1]] <- dataframe
 list.df[[2]] <- scalingfunction(dataframe,impute_na(dataframe))
 i <- 2
-
 epsilon <- 10E-8
 # Do while the difference in mean is above a "physical" threshold, argue why this is better than conventional MSE.
-while (abs(mean(rowSums(list.df[[i-1]],na.rm=T))-mean(rowSums(list.df[[i]],na.rm=T))) > epsilon){
+while (abs(sum(rowSums(list.df[[i-1]],na.rm=T))-sum(rowSums(list.df[[i]],na.rm=T))) > epsilon){
   list.df[[i+1]] <- scalingfunction(list.df[[i]],impute_na(list.df[[i]]))
+  ADS.list[i] <- abs(sum(rowSums(list.df[[i-1]],na.rm=T))-sum(rowSums(list.df[[i]],na.rm=T)))
   i <- i + 1
 }
-ADM <- abs(mean(rowSums(list.df[[length(list.df)]],na.rm=T))-mean(rowSums(list.df[[length(list.df)-1]],na.rm=T)))
+ADS <- abs(mean(rowSums(list.df[[length(list.df)]],na.rm=T))-mean(rowSums(list.df[[length(list.df)-1]],na.rm=T)))
 # Impute NA of the dataframe with converged values :
 dataframe <- impute_na(list.df[[length(list.df)]])
 # Final Output
@@ -182,8 +184,8 @@ output <- scalingfunction(dataframe,dataframe)
 # Rest column 
 final.output <- output %>% mutate(Rest=1-rowSums(output)) 
 
-result <- list(final.output,paste(i,"iterations needeed until convergence"),paste("At final iteration, ADM is",ADM))
-names(result) <- c("Output","Iterations","ADM")
+result <- list(final.output,paste(i,"iterations needeed until convergence"),paste("At final iteration, ADS is",ADS),ADS.list)
+names(result) <- c("Output","Iterations","ADS","ADS.list")
 return(result)
 }
 
@@ -217,5 +219,12 @@ dataframe <- read_csv(file = "GeoPT48 -84Ra.csv")
 dataframe
 
 # # 
-df <- iterative.mean(df_cleaning(dataframe))
-View(df[[1]])
+df <- iterative.mean(df_cleaning(dataframe,carbon = F,platinoids = F))
+conv.data <- cbind(seq(1:length(unlist(df$ADS.list))),unlist(df$ADS.list)) %>% as_tibble()
+# Convergence rate for GeoPT48 
+output <- ggplot(conv.data,aes(x=V1,y=V2))+geom_line() + scale_y_log10()+theme_bw()+labs(y="ADS",x="Iterations") # Quadratic !
+output
+
+names(list.df[25])
+
+convergenceplot(list.df[[26]])
