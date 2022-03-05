@@ -211,9 +211,11 @@ GWAlgo.mod <- function(dataframe,carbon=FALSE,platinoids=FALSE){
 
 # # ## Testing the function
 # # # Let a raw dataframe.
-# setwd("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/")
+setwd("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/")
 # # 
-# dataframe <- read_csv(file = "GeoPT48 -84Ra.csv")
+dataframe <- read_csv(file = "GeoPT48 -84Ra.csv")
+dataframe
+
 # # 
-# df <- iterative.mean(df_cleaning(dataframe))
-# View(df[[1]])
+df <- iterative.mean(df_cleaning(dataframe))
+View(df[[1]])

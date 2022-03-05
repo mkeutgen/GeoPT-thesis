@@ -9,6 +9,10 @@ library(MVN)
 setwd("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/")
 # CLR Transform, assessing the normality assumption
 # import dataset
+
+logit.transf <- function(x) log(x/(1-x))
+blr <- function(dataframe) apply(dataframe,2,logit.transf)
+
 dataframe <- read_csv("GeoPT48 .csv")
 
 # Proportion of unique values in the dataframe
@@ -19,84 +23,19 @@ apply(dataframe,2,prop.unique)
 # However, some elements like Indium, Germanium or Bore have less than 30 % of values which are not the blr.mean... 
 
 
+# Let's start with a simple dataframe.
 
-
-
-dataframe.clr <- dataframe %>% select(!c(X1,Rest)) %>%
-  clo() %>% clr() %>%
-  as_tibble()
-# Blr (really a logit transformation) 
-logit.transf <- function(x) log(x/(1-x))
-blr <- function(dataframe) apply(dataframe,2,logit.transf)
-
-# Goodness of fit test, we do Shapiro Wilk and not Kolmogorov-Smirnov. 
-
-shapiro.pvalue <- function(x) shapiro.test(x)$p.value
-pvalues <- apply(dataframe, 2, shapiro.pvalue)
-# Proportion of columns where normality assumption is not rejected 
-sum(ifelse(pvalues>0.05,1,0))/length(pvalues)
-# 0.03076923 with CLR
-# 0.046875 with ILR
-summary(prcomp(dataframe))
-
-# Which transformation of the data is the most likely to lead to an acceptable normality assumption ?
-
-# Import all processed datasets at once :
-
-# Get the files path :
-filePaths <- list.files("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/", "\\.csv$", full.names = TRUE)
-# Get the files name :
-fileNames <- list.files("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/", "\\.csv$", full.names = FALSE)
-
-
-list.df <- list()
-
-for (i in 1:length(filePaths)){
-  list.df[[i]] <- read_csv(file = filePaths[[i]])
-}
-
-names(list.df) <- fileNames
-# Remove NA.df, why does it appear in the first place ? 
-list.df <- list.df[names(list.df)!=c("NA.csv")]
-
-list.df.ilr <- list() 
-list.df.clr <- list()  
-list.df.alr <- list()  
-list.df.blr <- list()
-
-for (i in 1:length(list.df)){
-  list.df.ilr[[i]] <- list.df[[i]] %>% ilr() %>% as_tibble()
-}
-
-for (i in 1:length(list.df)){
-  list.df.clr[[i]] <- list.df[[i]] %>% clr() %>% as_tibble()
-}
-
-for (i in 1:length(list.df)){
-  list.df.alr[[i]] <- list.df[[i]] %>% alr() %>% as_tibble()
-}
-
-for (i in 1:length(list.df)){
-  list.df.blr[[i]] <- list.df[[i]] %>% blr() %>% as_tibble()
-}
-
-
-# Different data transformations :
-# ALR additive log ratios 
-# CLR centred log ratios
-# ILR isometric log ratios
-
-# Let's start with a simple dataframe, then replicate with the list of 29 dataframes previously computed. 
-dataframe <- read_csv("GeoPT48 .csv")
-dataframe <- dataframe %>% select(!c(Rest)) %>%
+dataframe.pr <- dataframe %>% select(!c(Rest)) %>%
   clo() %>% as_tibble()
 
 # Dataframes ALR CLR ILR BLR 
-dataframe.alr <- dataframe %>% alr(ivar = 1) %>% as_tibble()
-dataframe.clr <- dataframe %>% clr() %>% as_tibble()
-dataframe.ilr <- dataframe %>% ilr() %>% as_tibble()
+dataframe.alr <- dataframe.pr %>% alr() %>% as_tibble()
+dataframe.clr <- dataframe.pr %>% clr() %>% as_tibble()
+dataframe.ilr <- dataframe.pr %>% ilr() %>% as_tibble()
 colnames(dataframe.ilr) <- colnames(dataframe.clr)
-dataframe.blr <- dataframe %>% blr() %>% as_tibble()
+dataframe.blr <- dataframe.pr %>% blr() %>% as_tibble()
+
+
 
 ## Testing for Multivariate Normality. https://doi.org/10.1111/j.2517-6161.1982.tb01195.x
 # Aitchinson : "For d-dimensional compositional data sets we have applied Kolmogorov-Smirnov and
@@ -123,6 +62,7 @@ normality.test <- mvn(dataframe.ilr, subset = NULL, mvnTest = c("mardia"), covar
     showOutliers = TRUE, showNewData = FALSE)
 
 
+
 scaled.ilr <- scale(dataframe.ilr,center=T,scale = F) %>% as_tibble()
 # Under the assumption that the standardize dataset is sampled from a standard normal distribution, we remove observations 
 # whose values are above or under a cutoff which is the 0.995 quantile of the std normal distribution 
@@ -130,14 +70,7 @@ scaled.ilr <- scale(dataframe.ilr,center=T,scale = F) %>% as_tibble()
 cutoff.out <- qnorm(0.995) # 0.5 % observations under (-cutoff) and 0.5 % observations above this cutoff.
 
 # Let a vector
-x <- c(rnorm(10),c(3,-3))
-x[which(!(x>(-1.96) & x<1.96))]
 
-out <- function(x)which((x>(-cutoff.out) & x<cutoff.out))
-scaled.ilr[apply(scaled.ilr,2,out)]
-
-
-subset(x,x> -1.96)
 
 View(scaled.ilr)
 apply(scaled.ilr,2,min)
@@ -200,12 +133,34 @@ hist(dataframe.clr$Al2O3,breaks=50)
 hist(dataframe.ilr$Al2O3,breaks=50)
 hist(dataframe.blr$Al2O3,breaks=50)
 
-
+# Chrome, 94 % unique values
 par(mfrow=c(2,2))
 hist(dataframe.alr$Cr,breaks=50)
 hist(dataframe.clr$Cr,breaks=50)
 hist(dataframe.ilr$Cr,breaks=50)
 hist(dataframe.blr$Cr,breaks=50)
+
+# Nd 89 % unique values
+par(mfrow=c(2,2))
+hist(dataframe.alr$Nd,breaks=50)
+hist(dataframe.clr$Nd,breaks=50)
+hist(dataframe.ilr$Nd,breaks=50)
+hist(dataframe.blr$Nd,breaks=50)
+
+# Th 91 % unique values
+par(mfrow=c(2,2))
+hist(dataframe.alr$Th,breaks=50)
+hist(dataframe.clr$Th,breaks=50)
+hist(dataframe.ilr$Th,breaks=50)
+hist(dataframe.blr$Th,breaks=50)
+
+
+shapiro.pvalue(dataframe.blr$Th)
+skewness(dataframe.blr$Th)
+skewness(dataframe.blr$SiO2)
+skewness(dataframe.blr$Al2O3)
+skewness(dataframe.blr$Ag)
+
 
 # How reasonable is the Normality Assumption ? 
 shapiro.pvalue <- function(x) shapiro.test(x)$p.value
@@ -228,44 +183,56 @@ apply(dataframe.clr,2,skewness)
 # Removing outliers ? https://www.r-bloggers.com/2020/01/how-to-remove-outliers-in-r/ 
 # First we need to decide which columns should get their outliers removed.
 # Outlier detection should be pursued ONLY if the number of cells replaced by their blr.mean is not too large. 
-# What is too large ? We propose a cutoff of 25 %.
+# What is too large ? We propose a cutoff of 25 %. If more than 25 % of values in the column were imputed, we shall not
+# do outlier detection on these rows.
 
-cut.off <- 0.75
-result <- apply(dataframe,2,prop.unique)>=cut.off
-df <- dataframe[result]
-df.clr <- df %>% clr() %>% as_tibble()
-df.clr[10]
-element<- element[-which(df.clr[1] %in% out[[1]]),]
-out <- list()
-for (i in 1:ncol(df)){
-  out[[i]] <- boxplot(df.clr[i], plot=FALSE)$out
-}
+# How many dimensions are necessary for an observation to be considered as an outlier ? 
+prop.unique <- function(x) length((unique(x)))/length(x)
+apply(dataframe,2,prop.unique)
 
-# Weird bug going out here
-df.clr[[15]][-which(df.clr[[15]] %in% out[[15]]  )]
-# To be continued here....
-
-
-
-bx <- boxplot(scale(dataframe.clr$SiO2,center = T,scale=T))
-hist(dataframe.clr$SiO2)
-
-outliers <- boxplot(dataframe.clr$SiO2, plot=FALSE)$out
-
-x<-dataframe.clr
-
-x<- x[-which(dataframe.clr$SiO2 %in% outliers),]
-outliers
-shapiro.test(x$SiO2)
-kurtosis(dataframe.ilr)
-hist(dataframe.clr$Th)
-hist(dataframe.ilr$Th)
-
-
-outliers.list <- list()
-for (i in 1:ncol(dataframe.clr)){
-  outliers.list[[i]] <- boxplot(dataframe.clr[[i]], plot=FALSE)$out
+outlier.detection <- function(dataframe,cut.off=0.75,dimcutoff=5){
+  # outliers detection is done only on columns with less than 25 % (cut.off) of replicated values   
+  result <- apply(dataframe,2,prop.unique)>=cut.off 
+  dataframe <- dataframe[result]
+  df.ilr <- dataframe %>% ilr() %>% as_tibble()
+  out <- list()
+  for (i in 1:ncol(df.clr)){
+    out[[i]] <- boxplot(df.ilr[i], plot=FALSE,range=1.5)$out #threshold should be 3.81387 if we want to have 99 \% coverage probability
+  }
+  # List the outliers
+  list.out <- list()
   
+  for (i in 1:length(df.clr)){
+    list.out[[i]] <- which(df.ilr[[i]] %in% out[[i]])
+  }
+  vec.out <- unlist(list.out)
+  table <- table(vec.out)
+  outliers <- c()
+  ndim <- floor(ncol(df.clr)/dimcutoff)
+  for (i in 1:length(table)){
+    outliers[i] <- ifelse(table[i]>=ndim,names(table)[i],NA)
+  }
+  outliers <- na.omit(outliers)
+  outliers
+  df.wo.outliers <- df.ilr[!rownames(df.clr)%in% c(outliers),]
+  result <- list(df.wo.outliers,outliers)
+  names(result) <- c("Dataframe without outliers","Outliers")
+  return(result)
 }
 
-hist(x$SiO2)
+# Normality on dataset with outliers
+df.with.outliers.shap.pval <- apply(dataframe,2,pvalue.shap.t)
+sum(ifelse(df.with.outliers.shap.pval>=0.01,1,0))/ncol(dataframe) # 1 % of non rejection of the null.
+
+
+
+
+df.wo.out <- outlier.detection(dataframe)
+df.wo.out[[1]] %>% clr() %>% prcomp() %>% biplot()
+
+# Normality on dataset without the 7 outliers (outside the 95 % probability range)
+df.wo.outliers.shap.pval <- apply(df.wo.out[[1]],2,pvalue.shap.t)
+# 36 % of non-rejection of the null H0 at alpha=0.01
+sum(ifelse(df.wo.outliers.shap.pval>=0.01,1,0))/ncol(df.wo.out[[1]])
+summary(prcomp(dataframe.clr))
+
