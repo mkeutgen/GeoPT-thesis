@@ -1,13 +1,21 @@
 # Weltje Algorithm Illustration
+library(xtable)
+library(readr)
+library(tidyverse)
 chocolate <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/src/illustrationalgo/chocolate.csv")
 row.names(chocolate) <- chocolate[1]
 chocolate <- chocolate[-1]
+rownames(chocolate) <- NULL
+xtable(chocolate[-1]/100)
+chocolate
 chocolate0 <- 1/100*chocolate
 # Check for feasibility constraint :
 rowSums(chocolate0,na.rm = T)
 # Only rows 1 & 2 will be affected by the algorithm
 
 imputed.chocolate0 <- impute_na(chocolate0)
+xtable(apply(chocolate0,2,blr.mean) %>% as_tibble())
+
 rowSums(imputed.chocolate0)
 # Divide the entries in rows which do not satisfy the feasibility constraint by the rowsum 
 
@@ -46,6 +54,7 @@ conv.df
 ggplot(conv.df,aes(y=DCS,x=Iterations))+geom_line()+theme_bw()+scale_y_log10()
 chocolate4
 # Quadratic convergence rate
+toLatex(chocolate0)
 
 rowSums(imputed.chocolate0,na.rm = T)
 choco.blrmean <- apply(chocolate[-1],2,blr.mean)
