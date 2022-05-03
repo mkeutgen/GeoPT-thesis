@@ -1,3 +1,12 @@
+library(readr)
+library(tidyverse)
+library(compositions)
+library(moments)
+library(nortest)
+library(mvtnorm)
+library(MVN)
+
+
 # Code to import all processed dataframes, returns a named list of the processed dataframes.
 # Blr (really a logit transformation) 
 logit.transf <- function(x) log(x/(1-x))
@@ -46,3 +55,9 @@ for (i in 1:length(list.df)){
   list.df.blr[[i]] <- list.df[[i]] %>% blr() %>% as_tibble()
 }
 
+t <- read_csv(file = "/home/max/Documents/MStatistics/MA2/Thesis/Repository/data/raw/GeoPT43 -84Ra.csv")
+print(t[-1])
+library(xtable)
+
+print(xtable(t[1:17,1:17], type = "latex"), file = "sampletable.tex")
+get

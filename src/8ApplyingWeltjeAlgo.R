@@ -1,3 +1,12 @@
+#### Apply Weltje Algorithm to create the "processed" missing.values-free dataframes. ####
+#########################################################################################
+library("tidyverse")
+library("readr")
+library("compositions")
+
+#####
+source(file="WeltjeAlgorithm.R")
+
 
 # Get the full dataframe
 filePaths <- list.files("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/", "\\.csv$", full.names = TRUE)[-1]
@@ -13,6 +22,8 @@ for (i in 1:length(filePaths)){
   list.df[[i]] <- read_csv(filePaths[i])}
 
 names(list.df) <- names.df
+
+
 # Column Repair
 list.df[[3]]<- list.df[[3]] %>% rename(Fe2O3T = Fe2O3)
 list.df[[4]]<- list.df[[4]] %>% rename(Fe2O3T = Fe2O3)
@@ -22,12 +33,12 @@ list.df[[8]]<- list.df[[8]] %>% rename(Fe2O3T = Fe2O3)
 list.df[[9]]<- list.df[[9]] %>% rename(Fe2O3T = Fe2O3)
 list.df[[10]]<- list.df[[10]] %>% rename(Fe2O3T = Fe2O3)
 
-
-GWAlgo(list.df[[1]])
-GWAlgo(list.df[[2]])
-GWAlgo(list.df[[3]])
+# Initiate list of imputed.df
+imputed.df <- list()
 
 # Applying Algo.
+
+
 imputed.df[[1]] <- GWAlgo(list.df[[1]] )
 imputed.df[[2]] <- GWAlgo(list.df[[2]] )
 imputed.df[[3]] <- GWAlgo(list.df[[3]] )
@@ -81,8 +92,10 @@ imputed.df["GeoPT5 -"] <- NULL
 imputed.df["GeoPT6 -"] <- NULL
 imputed.df["GeoPT8 -"] <- NULL
 
-
-for(i in 1:length(imputed.df) ){
+for (i in 1:length(imputed.df)){
+  imputed.df[[i]][imputed.df[[i]] < 0] <- 0
+}
+for (i in 1:length(imputed.df) ){
   write.csv(imputed.df[[i]],file = paste0("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/",names(imputed.df[i]),".csv"),row.names = FALSE)
 }
 

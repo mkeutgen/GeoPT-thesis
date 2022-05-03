@@ -31,3 +31,4 @@ for (i in 1:length(list.df)){
 }
 
 
+var(list.df.ilr[[10]])*1000

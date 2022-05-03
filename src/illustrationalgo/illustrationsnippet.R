@@ -14,9 +14,12 @@ rowSums(chocolate0,na.rm = T)
 # Only rows 1 & 2 will be affected by the algorithm
 
 imputed.chocolate0 <- impute_na(chocolate0)
+rowsum(imputed.chocolate0)
+imputed.chocolate0
+rowSums(imputed.chocolate0)
 xtable(apply(chocolate0,2,blr.mean) %>% as_tibble())
 
-rowSums(imputed.chocolate0)
+xtable(round(imputed.chocolate0,3))
 # Divide the entries in rows which do not satisfy the feasibility constraint by the rowsum 
 
 dataframe <- chocolate0
@@ -58,3 +61,4 @@ toLatex(chocolate0)
 
 rowSums(imputed.chocolate0,na.rm = T)
 choco.blrmean <- apply(chocolate[-1],2,blr.mean)
+

@@ -42,6 +42,9 @@ ggtern(data=three.parts.df,aes(Cr,Ce,Ba)) +
   geom_point(aes(geom[1],geom[2],geom[3],color="geometric mean"),alpha=1)+
   theme_bw()
  
+three.parts.df %>% ilr() %>% colMeans() %>% ilrInv()
+sapply(three.parts.df,geometricmean)
+sum(geom)
 #################################
 ######## Missing value problem ##
 #################################
@@ -58,6 +61,7 @@ ggtern(data=three.parts.df,aes(Lu,Ce,Ba)) +
 geom <- sapply(rbind(three.parts.df),geomean)
 arithm <- colMeans(rbind(three.parts.df),na.rm = T)
 arithm
+
 three.parts.df.cena <- three.parts.df[!is.na(three.parts.df$Ce),]
 three.parts.df.bana <- three.parts.df[!is.na(three.parts.df$Ba),]
 # now df has only Lu N.A : 

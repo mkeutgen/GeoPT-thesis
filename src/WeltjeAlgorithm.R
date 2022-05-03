@@ -1,6 +1,5 @@
-######################
-## Weltje Algorithm ##
-######################
+###### WELTJE ALGORITHM TO IMPUTE MISSING VALUES BY BLR MEAN ######
+###### VERSION 1 ##################################################
 
 library("tidyverse")
 library("readr")

@@ -15,7 +15,7 @@ blr <- function(dataframe) apply(dataframe,2,logit.transf)
 
 dataframe <- read_csv("GeoPT48 .csv")
 
-# Proportion of unique values in the dataframe
+# Proportion of unique values in the data frame
 prop.unique <- function(x) length((unique(x)))/length(x)
 apply(dataframe,2,prop.unique)
 # One sees that in major elements, no values were imputed by the blr mean. This shows that the cutoff in the df cleaning
@@ -62,7 +62,6 @@ normality.test <- mvn(dataframe.ilr, subset = NULL, mvnTest = c("mardia"), covar
     showOutliers = TRUE, showNewData = FALSE)
 
 
-
 scaled.ilr <- scale(dataframe.ilr,center=T,scale = F) %>% as_tibble()
 # Under the assumption that the standardize dataset is sampled from a standard normal distribution, we remove observations 
 # whose values are above or under a cutoff which is the 0.995 quantile of the std normal distribution 
@@ -98,12 +97,11 @@ ilr.pvalues.df <- cbind(ilr.pvalue.ad,
                             ilr.pvalue.cvm, 
                             ilr.pvalue.shap)
 
-View(ilr.pvalues.df)
 
 
  # Proportion of columns where normality assumption is not rejected 
-sum(ifelse(pvalue.ad>0.05,1,0))/length(pvalues)
-sum(ifelse(pvalue.ad>0.05,1,0))/length(pvalues)
+sum(ifelse(ilr.pvalue.ad>0.05,1,0))/length(ilr.pvalue.ad)
+sum(ifelse(clr.pvalue.ad>0.05,1,0))/length(clr.pvalues.ad)
 
 sum(ifelse(pvalues>0.05,1,0))/length(pvalues)
 
