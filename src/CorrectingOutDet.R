@@ -17,6 +17,7 @@ ordered.names <- c("GeoPT1.csv","GeoPT2.csv","GeoPT3.csv","GeoPT4.csv","GeoPT5.c
                    "GeoPT38A.csv","GeoPT39 .csv","GeoPT39A.csv","GeoPT41 .csv","GeoPT43.csv",
                    "GeoPT46 .csv","GeoPT48 .csv")
 list.df <- list.df[ordered.names]
+names(list.df) <- gsub(" ","",names(list.df))
 
 
 #### RMSE Function and RMSE plot to determine optimal k, subspace of the PCA ####
@@ -68,7 +69,7 @@ filenamesplot <- gsub(" ", "", filenamesRMSEplot, fixed = TRUE)
 
 # Export RMSEplots 
 for (i in 1:length(list.scaledRMSEplots)){
-  ggsave(filename = paste("rmseplotSCALED/",filenamesplot[i],sep = ""),list.scaledRMSEplots[[i]])  
+  ggsave(filename = paste("rmseplotSCALED",filenamesplot[i],sep = "/"),list.scaledRMSEplots[[i]])  
 }
 
 #### RMSE PLOT DONE GOOD JOB. ####
@@ -85,7 +86,7 @@ ncomponent <- function(dataset,cutoff=.95){
   sim.dataset <- list()
   pca.simdataset <- list()
   ncompo <- c()
-  for (i in 1:100){
+  for (i in 1:500){
     sim.dataset[[i]] <- mvrnorm(nrow(dataset),mu = xbar,Sigma = sigmahat) %>% as_tibble()
     pca.simdataset[[i]] <- prcomp(sim.dataset[[i]],scale. = T)
     ncompo[i] <- which(cumsum(pca.simdataset[[i]]$sdev^2)/sum(pca.simdataset[[i]]$sdev^2)>=cutoff)  %>% min()
@@ -98,6 +99,14 @@ ncomponent <- function(dataset,cutoff=.95){
 # Number of meaningful components under the null
 
 ncomponents <- lapply(list.df,ncomponent)
+plot.based.optimal <- c()
+for (i in 1:length(rmse.list)){
+plot.based.optimal[i] <- max(which(rmse.list[[i]]>1))+1
+}
+plot.based.optimal
+sim.based.optimal <- ncomponents %>% as.numeric()
+# export csv
+write.csv(tibble(names(list.df),plot.based.optimal,sim.based.optimal),file = "sim_or_rmseplot.csv")
 
 #### Euclidean Distance between original data matrix  ####
 
@@ -105,6 +114,7 @@ eucliddist.l <- list()
 length(eucliddist.l) <- length(list.df)
 names(eucliddist.l) <- names(list.df)
 
+histograms.l <- list()
 length(histograms.l) <- length(list.df)
 names(histograms.l) <- names(list.df)
 
@@ -118,7 +128,7 @@ histograms.l[[i]] <-   eucliddist.l[[i]] %>% as_tibble() %>%
 
 
 for (i in 1:length(histograms.l)){
-ggsave(filename = paste("histplotSCALED/",filenamesplot[i]),histograms.l[[i]] )  
+ggsave(filename = paste("histplotSCALED",filenamesplot[i],sep = "/"),histograms.l[[i]] )  
 }
 
 #HISTPLOTS DONE
@@ -136,7 +146,7 @@ find.cutoff <- function(dataframe,nComp,quantile=.975){
   dataframe <- dataframe %>% dplyr::select(-Rest) %>% clo() %>% ilr() %>% as_tibble()
   Xhat <- colMeans(dataframe)
   Sigmahat <- var(dataframe)
-  X <- mvrnorm(5000,mu = Xhat,Sigma = Sigmahat)
+  X <- mvrnorm(50000,mu = Xhat,Sigma = Sigmahat)
   
   Xpca = prcomp(X,scale. = T)
   mu = colMeans(X)
@@ -157,14 +167,63 @@ find.cutoff <- function(dataframe,nComp,quantile=.975){
   return(output)
   
 }
-# Test the function
-find.cutoff(list.df[[2]] , ncomponents[[2]], quantile = .975)
+# Test the function, 29th dataset, 4 outliers detected
+
+df.29 <- find.cutoff(list.df[[29]] , ncomponents[[29]], quantile = .975)[[2]]
+df.29 %>% as_tibble %>% ggplot(aes(x=value))+geom_histogram(bins=60)+theme_bw()
+eucliddist.l[[29]] <-  RMSEfun(list.df[[29]],k=ncomponents[[29]])[[2]]
+df <- as.tibble(eucliddist.l[[29]])
+df$type <- "Real dataset"
+df.sim <- df.29 %>% as_tibble
+df.sim$type <- "Simulated dataset"
+df.tot <- rbind(df.sim,df)
+ggplot(aes(x=value),data=df.tot)+geom_density(aes(fill=type),alpha=.5)+geom_vline(xintercept = quantiles[29],show.legend = T)+
+  scale_x_continuous(breaks=c(0,0.5,1,1.25,2,2.5,round(quantiles[29],digits = 3)))+theme_bw()
+
+
+# DF[[10]] (GeoPT19), no outliers detected
+df.10 <- find.cutoff(list.df[[10]] , ncomponents[[10]], quantile = .975)[[2]]
+df.10 %>% as_tibble %>% ggplot(aes(x=value))+geom_histogram(bins=60)+theme_bw()
+eucliddist.l[[10]] <-  RMSEfun(list.df[[10]],k=ncomponents[[10]])[[2]]
+df <- as.tibble(eucliddist.l[[10]])
+df$type <- "Real dataset"
+df.sim <- df.10 %>% as_tibble
+df.sim$type <- "Simulated dataset"
+df.tot <- rbind(df.sim,df)
+ggplot(aes(x=value),data=df.tot)+geom_density(aes(fill=type),alpha=.5)+geom_vline(xintercept = quantiles[10],show.legend = T)+
+  scale_x_continuous(breaks=c(0,0.5,1,2,2.5,3,round(quantiles[10],digits = 3),4.5,5,6))+theme_bw()
+
+
+df.39 <- list.df[["GeoPT39.csv"]]
+df39.mean <- df.39 %>% ilr() %>% colMeans() %>% ilrInv() %>%
+  unclass() %>% as_tibble() %>% t()
+df39.mean
+colnames(df39.mean) <- colnames(df.39)
+
+df39.mean
 
 quantiles <- c()
 for (i in 1:length(list.df)){
   quantiles[i] <- find.cutoff(list.df[[i]],ncomponents[[i]])[[1]]
 }
+
 list.outliers <- list()
+
+histograms.l[["GeoPT1.csv"]]+geom_vline(xintercept = quantiles[[1]],color="red",show_guide=T)+
+  scale_x_continuous(breaks=c(0,0.5,1,1.5,2,2.5,1,round(quantiles[1],digits = 3)))
+
+histograms.l[["GeoPT16 .csv"]]+geom_vline(xintercept = quantiles[[9]],color="red",show_guide=T)+
+  +   scale_x_continuous(breaks=c(0,0.5,1,1.5,2,2.5,1,round(quantiles[9],digits = 3)))
+
+histograms.l[["GeoPT36 .csv"]]+geom_vline(xintercept = quantiles[[20]],color="red",show_guide=T)+
+  scale_x_continuous(breaks=c(0,0.5,1,1.5,2,2.5,1,round(quantiles[20],digits = 3)))
+
+histograms.l[["GeoPT48 .csv"]]+geom_vline(xintercept = quantiles[[29]],color="red",show_guide=T)+
+  scale_x_continuous(breaks=c(0,0.5,1,1.25,2,2.5,1,round(quantiles[29],digits = 3)))
+
+
+
+names(histograms.l)
 
 list.outliers <- list()
 for (i in 1:29){
@@ -172,5 +231,7 @@ for (i in 1:29){
 }
 list.outliers
 
+summarytable <- tibble(names(list.df),quantiles,as.character(list.outliers))
+write.csv(summarytable,file = "summarytableoutdet.csv")
 
 # DONE DONE DONE :D 
