@@ -13,9 +13,9 @@ logit.transf <- function(x) log(x/(1-x))
 blr <- function(dataframe) apply(dataframe,2,logit.transf)
 
 
-filePaths <- list.files("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/", "\\.csv$", full.names = TRUE)
+filePaths <- list.files("~/Documents/MA2/Thesis/Repository/data/processed/", "\\.csv$", full.names = TRUE)
 # Get the files name :
-fileNames <- list.files("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/", "\\.csv$", full.names = FALSE)
+fileNames <- list.files("~/Documents/MA2/Thesis/Repository/data/processed/", "\\.csv$", full.names = FALSE)
 
 
 list.df <- list()
@@ -55,9 +55,4 @@ for (i in 1:length(list.df)){
   list.df.blr[[i]] <- list.df[[i]] %>% blr() %>% as_tibble()
 }
 
-t <- read_csv(file = "/home/max/Documents/MStatistics/MA2/Thesis/Repository/data/raw/GeoPT43 -84Ra.csv")
-print(t[-1])
-library(xtable)
 
-print(xtable(t[1:17,1:17], type = "latex"), file = "sampletable.tex")
-get
