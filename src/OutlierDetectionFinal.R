@@ -242,6 +242,16 @@ for (i in 1:length(list.df)){
 list.outfree[[i]] <- list.df[[i]][-list.outliers[[i]],]
 }
 
+
+# 1, 5, 8, 10 et 26, no outliers were detected.
+
+list.outfree[[1]] <- list.df[[1]]
+list.outfree[[5]] <- list.df[[5]]
+list.outfree[[8]] <- list.df[[8]]
+list.outfree[[10]] <- list.df[[10]]
+list.outfree[[26]] <- list.df[[26]]
+
+
 for (i in 1:length(list.outfree) ){
   write.csv(list.outfree[[i]],file = paste0("~/Documents/MA2/Thesis/Repository/data/outfree/",names(list.df)[[i]]),row.names = FALSE)
 }
