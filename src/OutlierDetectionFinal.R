@@ -251,8 +251,10 @@ list.outfree[[8]] <- list.df[[8]]
 list.outfree[[10]] <- list.df[[10]]
 list.outfree[[26]] <- list.df[[26]]
 
+# Removing the rest variable, closing the dataset and eventually export the output to 
 
-for (i in 1:length(list.outfree) ){
+for (i in 1:length(list.outfree)){
+  list.outfree[[i]] <- list.outfree[[i]] %>% dplyr::select(-Rest) %>% clo() %>% as_tibble()
   write.csv(list.outfree[[i]],file = paste0("~/Documents/MA2/Thesis/Repository/data/outfree/",names(list.df)[[i]]),row.names = FALSE)
 }
 
