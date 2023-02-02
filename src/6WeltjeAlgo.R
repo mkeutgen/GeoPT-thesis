@@ -33,13 +33,15 @@ ox.majors <- c("SiO2", "TiO2", "Al2O3", "Fe2O3T", "Fe(II)O", "MnO", "MgO",
                "CaO", "Na2O", "K2O", "P2O5")
 
 # Fraction of element in the major oxides
-frac_el <- 1/100*c(46.75, 47.87, 52.93, 69.94, 77.74, 77.44, 60.31, 71.47, 74.18, 83.01, 43.64)
+frac_el <- 1/100*c(46.75, 47.87, 52.93, 69.94, 77.74, 77.44, 60.31, 
+                   71.47, 74.18, 83.01, 43.64)
 
 # Fraction of oxygen in the major oxides  
 frac_ox <- rep(1,times=length(frac_el))-frac_el
 
 # B. Let a dataset "data.raw", n x p matrix with n analysis and p analytes. 
-data.raw <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/GeoPT48 -84Ra.csv")
+data.raw <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/
+                     data/raw/GeoPT48 -84Ra.csv")
 
 # Elementary cleaning, removing columns with no values in the major elements
 
@@ -70,9 +72,12 @@ data[traces] <- data[traces] *10E-4
 feasible <- function(data.frame){
   # Feasibility matrix
   
-  f.mat <- data.frame %>% summarize(X = rowSums(data.frame %>% select(ox.majors)*frac_el,na.rm = T),
-                              OX = rowSums(data.frame %>% select(ox.majors)*frac_ox,na.rm = T),
-                              Tr = rowSums(data.frame %>% select(traces),na.rm = T))
+  f.mat <- data.frame %>% summarize(X = rowSums(data.frame %>% 
+                                                  select(ox.majors)*frac_el,na.rm = T),
+                              OX = rowSums(data.frame %>%
+                                             select(ox.majors)*frac_ox,na.rm = T),
+                              Tr = rowSums(data.frame %>%
+                                             select(traces),na.rm = T))
   # Scaling this matrix to unit sum
   f.mat <- as_tibble(clo(f.mat))
   f.mat <- f.mat %>% mutate(R = 1-X-OX-Tr,
@@ -94,7 +99,8 @@ feasible <- function(data.frame){
   # R is :
   Inv.R <- 100-(Inv.X + Inv.Tr + Inv.Ox)
   result <- list(Inv.X,Inv.Tr,Inv.R,f.mat.final)
-  names(result) <- c("Estimate X","Variance X","Estimate Tr","Estimate R","Feasibility Matrix")
+  names(result) <- c("Estimate X","Variance X","Estimate Tr",
+                     "Estimate R","Feasibility Matrix")
   return(result)
 
 }
@@ -122,7 +128,8 @@ blr.mean <- function(x){
 #names(blr.mean.l) <- names(df)
 
 # imputing NA with the mean calculated 
-# Replace Na's by mean of the logit transformed observed values column after column :
+# Replace Na's by mean of the logit transformed observed values column
+# after column :
 
 
 list.df <- list()

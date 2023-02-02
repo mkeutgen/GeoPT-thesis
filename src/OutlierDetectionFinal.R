@@ -44,6 +44,7 @@ RMSEfun <- function(data,k=1){
   names(output) <- c("RMSE","L2 distance between X and Xhat")
   return(output)
 }
+t <- c()
 rmse.list <- list()
 length(rmse.list) <- length(list.df)
 for (j in 1:length(list.df) ){
@@ -65,7 +66,7 @@ list.scaledRMSEplots[[i]] <- df %>% ggplot(aes(x=Components,y=RMSE))+geom_point(
 # Filenames repair, remove csv extension
 filenamesplot <- paste(str_extract(names(list.df), '.*(?=\\.csv)'),".jpeg")
 # Remove empty space
-filenamesplot <- gsub(" ", "", filenamesRMSEplot, fixed = TRUE)
+filenamesplot <- gsub(" ", "", filenamesplot, fixed = TRUE)
 
 # Export RMSEplots 
 for (i in 1:length(list.scaledRMSEplots)){
@@ -130,6 +131,7 @@ histograms.l[[i]] <-   eucliddist.l[[i]] %>% as_tibble() %>%
 for (i in 1:length(histograms.l)){
 ggsave(filename = paste("histplotSCALED",filenamesplot[i],sep = "/"),histograms.l[[i]] )  
 }
+
 
 #HISTPLOTS DONE
 
@@ -210,16 +212,16 @@ for (i in 1:length(list.df)){
 list.outliers <- list()
 
 histograms.l[["GeoPT1.csv"]]+geom_vline(xintercept = quantiles[[1]],color="red",show_guide=T)+
-  scale_x_continuous(breaks=c(0,0.5,1,1.5,2,2.5,1,round(quantiles[1],digits = 3)))
+  scale_x_continuous(breaks=c(0,0.5,1,1.5,2,2.5,1,round(quantiles[1],digits = 3)))+labs(x="Euclidean distance between data points and their projection")
 
-histograms.l[["GeoPT16 .csv"]]+geom_vline(xintercept = quantiles[[9]],color="red",show_guide=T)+
-  +   scale_x_continuous(breaks=c(0,0.5,1,1.5,2,2.5,1,round(quantiles[9],digits = 3)))
+histograms.l[["GeoPT16.csv"]]+geom_vline(xintercept = quantiles[[9]],color="red",show_guide=T)+
+     scale_x_continuous(breaks=c(0,0.5,1,1.5,2,2.5,1,round(quantiles[9],digits = 3)))+labs(x="Euclidean distance between data points and their projection")
 
-histograms.l[["GeoPT36 .csv"]]+geom_vline(xintercept = quantiles[[20]],color="red",show_guide=T)+
-  scale_x_continuous(breaks=c(0,0.5,1,1.5,2,2.5,1,round(quantiles[20],digits = 3)))
+histograms.l[["GeoPT36.csv"]]+geom_vline(xintercept = quantiles[[20]],color="red",show_guide=T)+
+  scale_x_continuous(breaks=c(0,0.5,1,1.5,2,2.5,1,round(quantiles[20],digits = 3)))+labs(x="Euclidean distance between data points and their projection")
 
-histograms.l[["GeoPT48 .csv"]]+geom_vline(xintercept = quantiles[[29]],color="red",show_guide=T)+
-  scale_x_continuous(breaks=c(0,0.5,1,1.25,2,2.5,1,round(quantiles[29],digits = 3)))
+histograms.l[["GeoPT48.csv"]]+geom_vline(xintercept = quantiles[[29]],color="red",show_guide=T)+
+  scale_x_continuous(breaks=c(0,0.5,1,1.25,2,2.5,1,round(quantiles[29],digits = 3)))+labs(x="Euclidean distance between data points and their projection")
 
 
 
@@ -234,7 +236,6 @@ list.outliers
 summarytable <- tibble(names(list.df),quantiles,as.character(list.outliers))
 write.csv(summarytable,file = "summarytableoutdet.csv")
 
-# DONE DONE DONE :D 
 
 # Export dataframes without outliers
 list.outfree <- list()

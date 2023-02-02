@@ -1,7 +1,7 @@
 # Loading Libraries
 library(readr)
 library(tidyverse)
-library(compositions)
+library(compositions) 
 library(moments)
 library(nortest)
 library(mvtnorm)
@@ -9,6 +9,7 @@ library(MVN)
 
 source("importdata.R")
 
+names(list.df)
 list.df.ilr <- list() 
 list.df.clr <- list()  
 list.df.alr <- list()  

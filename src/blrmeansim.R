@@ -31,7 +31,7 @@ for (i in 1:length(TrueMean) ){
 
 list.compositions <- list()
 for (i in 1:nsim){
-  list.compositions[[i]] <- ilrInv(mvrnorm(100, c(1,2), matrix(c(1,0.5,0.5,1),nrow = 2)))
+  list.compositions[[i]] <- ilrInv(mvrnorm(100, c(1,2), matrix(c(1,0.5,0.5,1),nrow = 2) ) )
 }
 
 for (j in 1:length(TrueMean)){
@@ -39,6 +39,11 @@ for (j in 1:length(TrueMean)){
   list.matrices[[j]][,i] <- list.compositions[[i]][,j]  
   }
 }
+
+# Logit mapping
+logit <- function(x){log((x)/(1-x))}
+
+
 
 # Matrix of simulations, with 100 rows, 10000 columns.
 

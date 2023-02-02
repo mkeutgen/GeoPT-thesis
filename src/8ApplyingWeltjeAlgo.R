@@ -9,7 +9,8 @@ source(file="WeltjeAlgorithm.R")
 
 
 # Get the full dataframe
-filePaths <- list.files("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/", "\\.csv$", full.names = TRUE)[-1]
+filePaths <- list.files("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/",
+                        "\\.csv$", full.names = TRUE)[-1]
 filePaths
 names.df <- c()
 for (i in 1:length(filePaths)){
@@ -84,21 +85,16 @@ imputed.df["GeoPT5"] <-  imputed.df["GeoPT5 -"]
 imputed.df["GeoPT6"] <-  imputed.df["GeoPT6 -"] 
 imputed.df["GeoPT8"] <-  imputed.df["GeoPT8 -"] 
 
-imputed.df["GeoPT1 -"] <- NULL
-imputed.df["GeoPT2 -"] <- NULL
-imputed.df["GeoPT3 -"] <- NULL
-imputed.df["GeoPT4 -"] <- NULL
-imputed.df["GeoPT5 -"] <- NULL
-imputed.df["GeoPT6 -"] <- NULL
-imputed.df["GeoPT8 -"] <- NULL
+
 
 for (i in 1:length(imputed.df)){
   imputed.df[[i]][imputed.df[[i]] < 0] <- 0
 }
 for (i in 1:length(imputed.df) ){
-  write.csv(imputed.df[[i]],file = paste0("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/",names(imputed.df[i]),".csv"),row.names = FALSE)
+  write.csv(imputed.df[[i]],file = paste0("~/Documents/MStatistics/MA2/
+                                          Thesis/Repository/data/processed/",
+                                          names(imputed.df[i]),".csv"),row.names = FALSE)
 }
 
 
-setwd("~/Documents/MStatistics/MA2/Thesis/Repository/data/processed/")
 

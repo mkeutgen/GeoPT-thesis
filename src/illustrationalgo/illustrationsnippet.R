@@ -2,7 +2,7 @@
 library(xtable)
 library(readr)
 library(tidyverse)
-chocolate <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/src/illustrationalgo/chocolate.csv")
+chocolate <- read_csv("~/Documents/MA2/Thesis/Repository/src/illustrationalgo/chocolate.csv")
 row.names(chocolate) <- chocolate[1]
 chocolate <- chocolate[-1]
 rownames(chocolate) <- NULL
@@ -14,6 +14,7 @@ rowSums(chocolate0,na.rm = T)
 # Only rows 1 & 2 will be affected by the algorithm
 
 imputed.chocolate0 <- impute_na(chocolate0)
+
 rowsum(imputed.chocolate0)
 imputed.chocolate0
 rowSums(imputed.chocolate0)

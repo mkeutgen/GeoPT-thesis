@@ -4,7 +4,6 @@ library(compositions)
 library(moments)
 library(nortest)
 library(mvtnorm)
-library(MVN)
 
 
 # Code to import all processed dataframes, returns a named list of the processed dataframes.

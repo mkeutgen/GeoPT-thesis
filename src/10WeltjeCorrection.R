@@ -14,7 +14,8 @@ blr.mean <- function(x){
 }
 
 # Cleaning function
-df_cleaning <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,cutoff.col=.95,carbon=FALSE,platinoids=TRUE){
+df_cleaning <- function(dataframe,cutoff.major=1/2,cutoff.trace=3/4,
+                        cutoff.col=.95,carbon=FALSE,platinoids=TRUE){
   # Vector of major elements
   majors <- c("Si", "Ti", "Al", "Fe3", "Fe2", "Mn", "Mg", 
               "Ca", "Na", "K", "P")
@@ -55,7 +56,8 @@ traces <-    if(carbon==T){
   
   
   # Fraction of element in the major oxides
-  frac_el <- 1/100*c(46.75, 47.87, 52.93, 69.94, 77.74, 77.44, 60.31, 71.47, 74.18, 83.01, 43.64)
+  frac_el <- 1/100*c(46.75, 47.87, 52.93, 69.94, 77.74, 77.44, 60.31,
+                     71.47, 74.18, 83.01, 43.64)
   
   # Fraction of oxygen in the major oxides  
   frac_ox <- rep(1,times=length(frac_el))-frac_el
@@ -65,7 +67,8 @@ traces <-    if(carbon==T){
   
   
   # Some dataframes don't have numeric columns yet 
-  dataframe[c(traces,ox.majors)] <- lapply(dataframe[c(traces,ox.majors)], function(x) {
+  dataframe[c(traces,ox.majors)] <- lapply(dataframe[c(traces,ox.majors)],
+                                           function(x) {
     if(is.character(x)) as.numeric(as.character(x)) else x
   })
   
@@ -83,7 +86,8 @@ traces <-    if(carbon==T){
   df.traces <- select(dataframe,all_of(traces))
   
   # Cut off rows with more than 50 % of major analytes are dropped this step is 
-  # important to avoid infinity values in the logit space (values too close to zero in the simplex space)
+  # important to avoid infinity values in the logit space (values too close 
+  # to zero in the simplex space)
   m <- which(rowSums(is.na(df.majors)) < cutoff.major*ncol(df.majors))
   
   # Cut off rows with more than 75 % trace elements are dropped
@@ -105,9 +109,12 @@ traces <-    if(carbon==T){
 
 # Feasibility function
 feasibility <- function(dataframe){
-f.mat <- dataframe %>% summarize(X = rowSums(dataframe %>% select(ox.majors)*frac_el,na.rm = T),
-                                  OX = rowSums(dataframe %>% select(ox.majors)*frac_ox,na.rm = T),
-                                  Tr = rowSums(dataframe %>% select(!ox.majors),na.rm = T))
+f.mat <- dataframe %>% summarize(X = rowSums(dataframe %>% 
+                                               select(ox.majors)*frac_el,na.rm = T),
+                                  OX = rowSums(dataframe %>%
+                                                 select(ox.majors)*frac_ox,na.rm = T),
+                                  Tr = rowSums(dataframe %>%
+                                                 select(!ox.majors),na.rm = T))
 return(f.mat)
 }
 # Impute NA function
@@ -142,12 +149,15 @@ list.df[[2]] <- scalingfunction(dataframe,impute_na(dataframe))
 i <- 2
 
 epsilon <- 10E-8
-# Do while the difference in mean is above a "physical" threshold, argue why this is better than conventional MSE.
-while (abs(mean(rowSums(list.df[[i-1]],na.rm=T))-mean(rowSums(list.df[[i]],na.rm=T))) > epsilon){
+# Do while the difference in mean is above a "physical" threshold,
+# argue why this is better than conventional MSE.
+while (abs(mean(rowSums(list.df[[i-1]],na.rm=T))-mean(rowSums(list.df[[i]],na.rm=T))) 
+       > epsilon){
   list.df[[i+1]] <- scalingfunction(list.df[[i]],impute_na(list.df[[i]]))
   i <- i + 1
 }
-ADM <- abs(mean(rowSums(list.df[[length(list.df)]],na.rm=T))-mean(rowSums(list.df[[length(list.df)-1]],na.rm=T)))
+ADM <- abs(mean(rowSums(list.df[[length(list.df)]],na.rm=T))-
+             mean(rowSums(list.df[[length(list.df)-1]],na.rm=T)))
 # Impute NA of the dataframe with converged values :
 dataframe <- impute_na(list.df[[length(list.df)]])
 # Final Output
@@ -155,7 +165,8 @@ output <- scalingfunction(dataframe,dataframe)
 # Rest column 
 final.output <- output %>% mutate(Rest=1-rowSums(output)) 
 
-result <- list(final.output,paste(i,"iterations needeed until convergence"),paste("At final iteration, ADM is",ADM))
+result <- list(final.output,paste(i,"iterations needeed until convergence"),
+               paste("At final iteration, ADM is",ADM))
 names(result) <- c("Output","Iterations","ADM")
 return(result)
 }

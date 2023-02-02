@@ -15,7 +15,8 @@ library(ggrepel)
 set.seed(1)
 # Start with most recent dataset
 
-data <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/GeoPT48 -84Ra.csv")
+data <- read_csv("~/Documents/MStatistics/MA2/Thesis/Repository/data/raw/
+                 GeoPT48 -84Ra.csv")
 # Geometric mean of this sample of compositions : 
 geomean <- function(x){
   # compute the geometric mean of a vector
@@ -106,8 +107,10 @@ df4.plot <- ggplot(df.4.cl,aes(x=Na2O,y=K2O))+
 sel <- c("Na2O","CaO","K2O")
 df.3 <- select(data,all_of(sel))
 df.3.cl <- data.frame(clo(df.3))
-df3.plot <- ggplot(df.3.cl,aes(x=Na2O,y=K2O))+geom_point(color="midnightblue",size=2)+
-  theme_bw()+geom_smooth(method="lm",size=1,se = FALSE,color="mediumpurple2")
+df3.plot <- ggplot(df.3.cl,aes(x=Na2O,y=K2O))+
+  geom_point(color="midnightblue",size=2)+
+  theme_bw()+geom_smooth(method="lm",size=1,se = FALSE,
+                         color="mediumpurple2")
 
 df3.plot + df4.plot
 
@@ -125,7 +128,8 @@ logratio4plot <- ggplot(df.4.cl,aes(x=log.Na2O,y=log.K2O))+
   geom_point(color="blue",size=2)+
   labs(y="log(K2O/CaO)",x="log(Na2O/CaO)")+theme_bw()
 
-logratio3plot <- ggplot(df.3.cl,aes(x=log.Na2O,y=log.K2O))+geom_point(color="blue",size=2)+
+logratio3plot <- ggplot(df.3.cl,aes(x=log.Na2O,y=log.K2O))+
+  geom_point(color="blue",size=2)+
   labs(y="log(K2O/CaO)",x="log(Na2O/CaO)")+theme_bw()
 
 logratio3plot + logratio4plot
