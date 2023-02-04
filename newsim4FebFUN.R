@@ -1,4 +1,4 @@
-# New Sim Gert Jan 25 January 2023 #
+# New Sim Gert Jan 4 February 2023 #
 library(MASS)
 library(tidyverse)
 library(compositions)
@@ -45,71 +45,71 @@ mu <- true[c(c("Si", "Ti", "Al", "Fe", "Mn", "Mg", "Ca", "Na", "K", "P",
 
 
 GJ.sim <- function(mu){
-    sample.inR <- MASS::mvrnorm(n=100,mu = mu,Sigma = 1E-2*diag(abs(mu)))
-    sample.inS <- sample.inR %>% ilrInv() %>% as_tibble()
-    # Keep only the major elements :
-    sample.inS.onlymajor <- sample.inS[1:10]
-    
-    for (i in 1:nrow(sample.inR)){
-      sample.inS.onlymajor[i,] <- clo(sample.inS.onlymajor[i,])*sum(true[1:10])
-    }
-    
-    
-    
-    
-    # Now one should perturb this sample by perturbating each observation
-    # with a measurement error term. That's each row should deviate from 
-    # the exact proportion (0.535644 %) by some random error term...
-    
-    # 1 Map each column of the matrix of major elements in the simplex
-    logit.transf.sample <- logit(sample.inS.onlymajor)
-    # Let a multiplicative error term which is lognormal distributed with
-    # mean 0 and standard deviation 0.005.
-    
-    multiplicative.error.term <- exp(rnorm(100,0,0.5E-2))
-    # Perturb the major elements 
-    logit.transf.sample.perturbed <- logit.transf.sample*multiplicative.error.term
-    # Then perform logitINV transf
-    perturbed.sample.major <- logit.transf.sample.perturbed %>% logitInv()
-    
-    #  Step 2 : Compute the oxygen for each composition (deterministic quantity, not random !)
-    oxygen.computed <- c()
-    for  (i in 1:nrow(perturbed.sample.major)){
-      oxygen.computed[i] <- sum(frac_el^{-1}*perturbed.sample.major[i,]-perturbed.sample.major[i,])
-    }
-    names(perturbed.sample.major) <- name.majors
-    perturbed.sample.major$O <- oxygen.computed
-    
-    # Step 3 draw randomly from traces, now Sigma is 1E-4*diag(abs(mu))
-    sample.inR <- MASS::mvrnorm(n=100,mu = mu,Sigma = 1E-2*diag(abs(mu)))
-    sample.inS <- sample.inR %>% ilrInv() %>% as_tibble()
-    # Keep only the trace elements :
-    sample.inS.onlytraces <- sample.inS[12:21]
-    # Close it
-    for (i in 1:nrow(sample.inR)){
-      sample.inS.onlytraces[i,] <- clo(sample.inS.onlytraces[i,])*sum(true[12:21])
-    }
-    # Perturb the sample with a lognormal error term : 
-    # 1 Map each column of the matrix of major elements in the simplex
-    logit.transf.sample <- logit(sample.inS.onlytraces)
-    # Let a multiplicative error term which is lognormal distributed with
-    # mean 0 and standard deviation 0.005.
-    
-    multiplicative.error.term <- exp(rnorm(100,0,0.5E-2))
-    # Perturb the major elements 
-    logit.transf.sample.perturbed <- logit.transf.sample*multiplicative.error.term
-    # Then perform logitINV transf
-    perturbed.sample.traces <- logit.transf.sample.perturbed %>% logitInv()
-    
-    # Step 4 Undetected :
-    
-    df <- data.frame(perturbed.sample.major,perturbed.sample.traces)
-    # Undetected follows a lognormal 
-    U <- logitInv(logit(true["U"])*exp(rnorm(100,0,0.5E-2)))
-    df$U <- U
-    names(df) <- names(true)
-    df %>% colMeans()
-    return(df)
+  sample.inR <- MASS::mvrnorm(n=100,mu = mu,Sigma = 1E-2*diag(abs(mu)))
+  sample.inS <- sample.inR %>% ilrInv() %>% as_tibble()
+  # Keep only the major elements :
+  sample.inS.onlymajor <- sample.inS[1:10]
+  
+  for (i in 1:nrow(sample.inR)){
+    sample.inS.onlymajor[i,] <- clo(sample.inS.onlymajor[i,])*sum(true[1:10])
+  }
+  
+  
+  
+  
+  # Now one should perturb this sample by perturbating each observation
+  # with a measurement error term. That's each row should deviate from 
+  # the exact proportion (0.535644 %) by some random error term...
+  
+  # 1 Map each column of the matrix of major elements in the simplex
+  logit.transf.sample <- logit(sample.inS.onlymajor)
+  # Let a multiplicative error term which is lognormal distributed with
+  # mean 0 and standard deviation 0.005.
+  
+  multiplicative.error.term <- exp(rnorm(100,0,0.5E-2))
+  # Perturb the major elements 
+  logit.transf.sample.perturbed <- logit.transf.sample*multiplicative.error.term
+  # Then perform logitINV transf
+  perturbed.sample.major <- logit.transf.sample.perturbed %>% logitInv()
+  
+  #  Step 2 : Compute the oxygen for each composition (deterministic quantity, not random !)
+  oxygen.computed <- c()
+  for  (i in 1:nrow(perturbed.sample.major)){
+    oxygen.computed[i] <- sum(frac_el^{-1}*perturbed.sample.major[i,]-perturbed.sample.major[i,])
+  }
+  names(perturbed.sample.major) <- name.majors
+  perturbed.sample.major$O <- oxygen.computed
+  
+  # Step 3 draw randomly from traces, now Sigma is 1E-4*diag(abs(mu))
+  sample.inR <- MASS::mvrnorm(n=100,mu = mu,Sigma = 1E-2*diag(abs(mu)))
+  sample.inS <- sample.inR %>% ilrInv() %>% as_tibble()
+  # Keep only the trace elements :
+  sample.inS.onlytraces <- sample.inS[12:21]
+  # Close it
+  for (i in 1:nrow(sample.inR)){
+    sample.inS.onlytraces[i,] <- clo(sample.inS.onlytraces[i,])*sum(true[12:21])
+  }
+  # Perturb the sample with a lognormal error term : 
+  # 1 Map each column of the matrix of major elements in the simplex
+  logit.transf.sample <- logit(sample.inS.onlytraces)
+  # Let a multiplicative error term which is lognormal distributed with
+  # mean 0 and standard deviation 0.005.
+  
+  multiplicative.error.term <- exp(rnorm(100,0,0.5E-2))
+  # Perturb the major elements 
+  logit.transf.sample.perturbed <- logit.transf.sample*multiplicative.error.term
+  # Then perform logitINV transf
+  perturbed.sample.traces <- logit.transf.sample.perturbed %>% logitInv()
+  
+  # Step 4 Undetected :
+  
+  df <- data.frame(perturbed.sample.major,perturbed.sample.traces)
+  # Undetected follows a lognormal 
+  U <- logitInv(logit(true["U"])*exp(rnorm(100,0,0.5E-2)))
+  df$U <- U
+  names(df) <- names(true)
+  df %>% colMeans()
+  return(df)
 }
 #list.df <- list()
 #m <- 500
@@ -178,7 +178,7 @@ ggplot(df.output,aes(x=value))+geom_density(aes(fill=type),alpha=.7)+
 
 
 blr.mean.vector <- apply(GJ.sim(mu)
-,2,blr.mean)
+                         ,2,blr.mean)
 blr.mean.vector
 
 # Computing biases
@@ -187,9 +187,9 @@ blr.bias <-    data.frame(matrix(ncol=22,nrow=500))
 ilr.bias <-    data.frame(matrix(ncol=22,nrow=500))
 
 for (i in 1:m){
-arithm.bias[i,] <- abs(df1[1:22][i,]-true)
-blr.bias[i,] <- abs(df2[1:22][i,]-true)
-ilr.bias[i,] <- abs(df3[1:22][i,]-true)
+  arithm.bias[i,] <- df1[1:22][i,]-true
+  blr.bias[i,] <- df2[1:22][i,]-true
+  ilr.bias[i,] <- df3[1:22][i,]-true
 }
 
 
