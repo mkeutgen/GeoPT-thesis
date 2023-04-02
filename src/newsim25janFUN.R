@@ -187,9 +187,9 @@ blr.bias <-    data.frame(matrix(ncol=22,nrow=500))
 ilr.bias <-    data.frame(matrix(ncol=22,nrow=500))
 
 for (i in 1:m){
-arithm.bias[i,] <- abs(df1[1:22][i,]-true)
-blr.bias[i,] <- abs(df2[1:22][i,]-true)
-ilr.bias[i,] <- abs(df3[1:22][i,]-true)
+arithm.bias[i,] <- df1[1:22][i,]-true
+blr.bias[i,] <- df2[1:22][i,]-true
+ilr.bias[i,] <- df3[1:22][i,]-true
 }
 
 
@@ -227,8 +227,6 @@ df.bias$chem_element <- rownames(df.bias)
 df.bias %>% pivot_longer(cols = !chem_element) %>%
   ggplot(aes(x=chem_element,y=value,color=name),alpha=.4)+geom_point()+
   theme_bw()
-
-
 
 
 
