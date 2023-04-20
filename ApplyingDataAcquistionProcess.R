@@ -1,5 +1,4 @@
 # Apply the Data Acquisition Process Algorithm to the 29 different datasets
-rm(list=ls())
 setwd("~/Documents/GeoPTManuscript/")
 
 library(MASS)
@@ -27,34 +26,14 @@ variance.R.space <- readRDS("src/list_var_df.RData")
 
 
 
-mu <- mean.compo.simp[1,] %>% logit() %>% as_vector()
-mu <- mean.compo.simp[2,] %>% logit() %>% as_vector()
-mu <- mean.compo.simp[3,] %>% logit() %>% as_vector()
-
-
-
 mu.parameters <-  list()
 for (i in 1:29){
-  mu.parameters[[i]] <- mean.compo.simp[[i]][1:21] %>% logit() %>% as_vector()
+  mu.parameters[[i]] <- mean.compo.simp[[i]]
 }
 
 
-names(mu.parameters) <- name.df
+names(mu.parameters) <- names(mean.compo.simp)
 
-mean.compo.simp
-
-name.df
-geopt16df.list <- list()
-geopt19df.list <- list()
-geopt35df.list <- list()
-geopt36df.list <- list()
-geopt37df.list <- list()
-geopt38df.list <- list()
-geopt38Adf.list <- list()
-
-replace(name.df," ","")
-name.sim <- paste("sim_list",gsub(" ","",name.df),sep = "_")
-name.sim <- as.factor(name.sim)
 
 sim_list_GeoPT1.csv   <- list()
 sim_list_GeoPT14.csv  <- list()
@@ -88,11 +67,11 @@ sim_list_GeoPT8.csv   <- list()
 
 
 GJ.sim(mu.parameters[[4]],Sigma = variance.R.space[[4]]) 
-mean.compo.simp[4,]
 
 View(mean.compo.full)
 
 GJ.sim(mu.parameters[[3]],Sigma = variance.R.space[[3]]) %>% rowSums()
+
 
 
 
@@ -106,9 +85,9 @@ for (i in 1:200){sim_list_GeoPT20.csv[[i]]  <-GJ.sim(mu.parameters[[6]],Sigma = 
 for (i in 1:200){sim_list_GeoPT21.csv[[i]]  <-GJ.sim(mu.parameters[[7]],Sigma = variance.R.space[[7]])   }
 for (i in 1:200){sim_list_GeoPT22.csv[[i]] <- GJ.sim(mu.parameters[[8]],Sigma = variance.R.space[[8]])   }
 for (i in 1:200){sim_list_GeoPT23.csv[[i]]  <-GJ.sim(mu.parameters[[9]],Sigma = variance.R.space[[9]])   }
-for (i in 1:200){sim_list_GeoPT25.csv[[i]]  <-GJ.sim(mu.parameters[[10]],Sigma= variance.R.space[[10]])  }
-for (i in 1:200){sim_list_GeoPT29.csv[[i]]  <-GJ.sim(mu.parameters[[11]],Sigma= variance.R.space[[11]])  }
-for (i in 1:200){sim_list_GeoPT3.csv[[i]]  <- GJ.sim(mu.parameters[[12]],Sigma= variance.R.space[[12]])  }
+for (i in 1:200){sim_list_GeoPT25.csv[[i]] <-GJ.sim(mu.parameters[[10]],Sigma= variance.R.space[[10]])  }
+for (i in 1:200){sim_list_GeoPT29.csv[[i]] <-GJ.sim(mu.parameters[[11]],Sigma= variance.R.space[[11]])  }
+for (i in 1:200){sim_list_GeoPT3.csv[[i]]  <-GJ.sim(mu.parameters[[12]],Sigma= variance.R.space[[12]])  }
 for (i in 1:200){sim_list_GeoPT32.csv[[i]]<- GJ.sim(mu.parameters[[13]],Sigma= variance.R.space[[13]])   }
 for (i in 1:200){sim_list_GeoPT34.csv[[i]] <-GJ.sim(mu.parameters[[14]],Sigma= variance.R.space[[14]])   }
 for (i in 1:200){sim_list_GeoPT35.csv[[i]] <-GJ.sim(mu.parameters[[15]],Sigma= variance.R.space[[15]])   }
@@ -123,7 +102,6 @@ for (i in 1:200){sim_list_GeoPT41.csv[[i]]<- GJ.sim(mu.parameters[[23]],Sigma= v
 for (i in 1:200){sim_list_GeoPT43.csv[[i]]<- GJ.sim(mu.parameters[[24]],Sigma= variance.R.space[[24]])   }
 for (i in 1:200){sim_list_GeoPT46.csv[[i]]<- GJ.sim(mu.parameters[[25]],Sigma= variance.R.space[[25]])   }
 for (i in 1:200){sim_list_GeoPT48.csv[[i]]<- GJ.sim(mu.parameters[[26]],Sigma= variance.R.space[[26]])   }
-
 for (i in 1:200){sim_list_GeoPT5.csv[[i]] <- GJ.sim(mu.parameters[[27]],Sigma= variance.R.space[[27]])   }
 for (i in 1:200){sim_list_GeoPT6.csv[[i]] <- GJ.sim(mu.parameters[[28]],Sigma= variance.R.space[[28]])   }
 for (i in 1:200){sim_list_GeoPT8.csv[[i]] <- GJ.sim(mu.parameters[[29]],Sigma= variance.R.space[[29]])   }

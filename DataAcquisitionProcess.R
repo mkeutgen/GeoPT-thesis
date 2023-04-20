@@ -19,7 +19,6 @@ library(quadprog)
 # Clear Workspace
 
 
-
 # Proportion of Oxygen in Major Oxides 
 frac_el <- 1/100*c(46.75, 47.87, 52.93, 69.94, 77.44, 60.31, 71.47, 74.18, 83.01, 43.64)
 frac_ox <- rep(1,times=length(frac_el))-frac_el
@@ -71,9 +70,11 @@ mu <- true[c(c("Si", "Ti", "Al", "Fe", "Mn", "Mg", "Ca", "Na", "K", "P",
                "Ba", "Sr", "Zr", "Ce", "F", "Cr", "Nb", "Zn", "S", "Rb", "U"
 ))] %>% logit() %>% unclass()
 
+# mu <- mu.parameters[[27]]
+# Sigma <- variance.R.space[[27]]
 
-
-GJ.sim <- function(mu,Sigma){
+GJ.sim <- function(true,Sigma){
+  mu <- logit(true)[1:21]
   sample.inR <- MASS::mvrnorm(n=100,mu = mu,Sigma = Sigma)
   sample.inH <- sample.inR %>% as_tibble() %>% apply(2,logitInv) %>% as_tibble()
   # Keep only the major elements :
@@ -93,7 +94,7 @@ GJ.sim <- function(mu,Sigma){
   # Let a multiplicative error term which is lognormal distributed with
   # mean 0 and standard deviation 0.005.
   
-  multiplicative.error.term <- exp(rnorm(100,0,0.5E-2))
+  multiplicative.error.term <- exp(rnorm(100,0,2.5E-2))
   # Perturb the major elements 
   logit.transf.sample.perturbed <- logit.transf.sample*multiplicative.error.term
   # Then perform logitINV transf
@@ -105,11 +106,10 @@ GJ.sim <- function(mu,Sigma){
     oxygen.computed[i] <- sum(frac_el^{-1}*perturbed.sample.major[i,]-perturbed.sample.major[i,])
   }
   names(perturbed.sample.major) <- name.majors
+  
   perturbed.sample.major$O <- oxygen.computed
   
   # Step 3 draw randomly from traces, now Sigma is 1E-4*diag(abs(mu))
-  sample.inR <- MASS::mvrnorm(n=100,mu = mu,Sigma = Sigma)
-  sample.inH <- sample.inR %>% logitInv() %>% as_tibble()
   # Keep only the trace elements :
   sample.inH.onlytraces <- sample.inH[12:21]
   # Close it
@@ -122,7 +122,7 @@ GJ.sim <- function(mu,Sigma){
   # Let a multiplicative error term which is lognormal distributed with
   # mean 0 and standard deviation 0.005.
   
-  multiplicative.error.term <- exp(rnorm(100,0,0.5E-2))
+  multiplicative.error.term <- exp(rnorm(100,0,2.5E-2))
   # Perturb the major elements 
   logit.transf.sample.perturbed <- logit.transf.sample*multiplicative.error.term
   # Then perform logitINV transf
@@ -139,7 +139,7 @@ GJ.sim <- function(mu,Sigma){
   replacement.val <- rnorm(nb.missingval,mean.nonnegu,sd.nonnegu) %>% exp()
   df$U <- sample.U
   df$U <- replace(df$U,which(is.na(df$U)),replacement.val)
-  names(df) <- names(true)  
+  df
   #df.w.U <- clo(df)
   #df <- clo(df[-22])
   return(df)
