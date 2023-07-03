@@ -1,7 +1,6 @@
 library(readr)
 library(tidyverse)
 library(compositions)
-library(moments)
 library(nortest)
 library(mvtnorm)
 
@@ -12,9 +11,9 @@ logit.transf <- function(x) log(x/(1-x))
 blr <- function(dataframe) apply(dataframe,2,logit.transf)
 
 
-filePaths <- list.files("~/Documents/GeoPTManuscript/data/processed/", "\\.csv$", full.names = TRUE)
+filePaths <- list.files("~/Documents/GeoPTManuscript/data/raw/", "\\.csv$", full.names = TRUE)
 # Get the files name :
-fileNames <- list.files("~/Documents/GeoPTManuscript/data/processed/", "\\.csv$", full.names = FALSE)
+fileNames <- list.files("~/Documents/GeoPTManuscript/data/raw/", "\\.csv$", full.names = FALSE)
 
 
 list.df <- list()
@@ -26,6 +25,15 @@ for (i in 1:length(filePaths)){
 names(list.df) <- fileNames
 # Remove NA.df, why does it appear in the first place ? 
 list.df <- list.df[names(list.df)!=c("NA.csv")]
+
+names.full.wO <- c("SiO2","TiO2","Al2O3","Fe2O3T","MnO","MgO","CaO","Na2O","K2O","P2O5",
+                   "Ag","Ba","Cu","Rb","Zr","Sr","Li","Ce","Zn","V")
+
+
+
+
+
+
 
 ## Different data transformations :
 ## ALR additive log ratios 
